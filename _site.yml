@@ -1,7 +1,7 @@
 name: Covid-19 CZ
 output_dir: docs
 include: ["demo.R"]
-exclude: ["LICENSE.md", "*.csv", "*.rds"]
+exclude: ["LICENSE.md", "*.csv", "*.rds", "renv", "renv.lock"]
 navbar:
   title: "Basic Covid-19 overview for CZ"
   right:
@@ -9,6 +9,7 @@ navbar:
     href: https://github.com/petrbouchal/covid19
 output:
   html_document:
+    css: extra.css
     toc: false
     toc_float: false
     code_folding: hide
