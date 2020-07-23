@@ -1,8 +1,19 @@
-name: "my-website"
+name: Covid-19 CZ
+output_dir: docs
+include: ["demo.R"]
+exclude: ["LICENSE.md", "*.csv", "*.rds"]
 navbar:
-  title: "My Website"
-  left:
-    - text: "Home"
-      href: index.html
-    - text: "About"
-      href: about.html
+  title: "Basic Covid-19 overview for CZ"
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/petrbouchal/covid19
+output:
+  html_document:
+    toc: false
+    toc_float: false
+    code_folding: hide
+    mathjax: null
+    df_print: paged
+    code_download: T
+    includes:
+      in_header: matomo.html
