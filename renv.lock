@@ -857,6 +857,13 @@
       "Repository": "CRAN",
       "Hash": "8c8298583adbbe76f3c2220eef71bebc"
     },
+    "ragg": {
+      "Package": "ragg",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "55ecadf0808546b2d1e8a06b1658a787"
+    },
     "raster": {
       "Package": "raster",
       "Version": "3.3-7",
