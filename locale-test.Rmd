@@ -12,7 +12,7 @@ Sys.setlocale("LC_ALL", "cs_CZ.UTF-8")
 ```
 
 ```{r}
-Sys.Date()
+format(Sys.Date(), "%B")
 ```
 
 ```{r}
@@ -20,5 +20,5 @@ Sys.setlocale("LC_TIME", "cs_CZ.UTF-8")
 ```
 
 ```{r}
-Sys.Date()
+format(Sys.Date(), "%B")
 ```
