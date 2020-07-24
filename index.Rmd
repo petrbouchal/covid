@@ -2,11 +2,237 @@
 title: "Selected Covid-19 data for Czech Republic"
 ---
 
+```{r setup, include=F}
+
+knitr::opts_chunk$set(fig.retina = 3, echo = F,
+                      warning = F,
+                      out.width = "90%",
+                      dev = "ragg_png",
+                      fig.showtext = T,
+                      message = F)
+
+knitr::opts_knit$set()
+
+library(stringr)
+library(dplyr)
+library(ggplot2)
+library(czso)
+library(CzechData)
+library(lubridate)
+library(ptrr)
+library(fontawesome)
+library(tidyverse)
+library(pragr)
+library(rmapshaper)
+
+Sys.setlocale("LC_TIME", "cs_CZ.UTF-8")
+
+ptrr::set_geom_defaults()
+update_geom_defaults("rect", list(fill = "blue"))
+```
+
+```{r}
+sysfonts::font_add_google("IBM Plex Sans", "Roboto")
+sysfonts::font_add_google("IBM Plex Sans Condensed", "Roboto Condensed")
+```
+
 # {.tabset}
 
+## Mortality statistics {.tabset .tabset-pills}
 
-## Mortality statistics
 ```{r}
-3*4
+zmr0 <- czso_get_table("130185", force_redownload = T)
+zmr <- zmr0 %>% 
+  mutate(tyden = as.numeric(tyden),
+         casref_do = as.Date(casref_do),
+         day_sameyear = make_date(1970, month = month(casref_do),
+                                  day = day(casref_do)))  
+
+last_date_fmt <- ptrr::format_date_human(max(zmr$casref_do))
+today_fmt <- ptrr::format_date_human()
+```
+
+
+```{r}
+zemr_plot_base <- zmr %>% 
+  ggplot(aes(day_sameyear, hodnota,
+             alpha = rok == 2020, size = rok == 2020)) +
+  geom_line(aes(colour = as.factor(rok), group = rok)) +
+  scale_alpha_manual(values = c(`TRUE` = 1, `FALSE` = .4), guide = "none") +
+  scale_size_manual(values = c(`TRUE` = .7, `FALSE` = .4), guide = "none") +
+  scale_colour_viridis_d(direction = -1, name = "rok") +
+  ptrr::theme_ptrr("both", multiplot = T, axis.title.x = element_text()) +
+  labs(x = "Týden v roce",
+       subtitle = str_glue("Poslední data k {last_date_fmt}, staženo {today_fmt}"),
+       title = "Počty zemřelých podle týdnů v roce, 2011-2020",
+       caption = "Data: ČSÚ, sada 130185 | @petrbouchal") +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+  theme(axis.text.x = element_text(hjust = 0))
+```
+
+### Detail (separate axes)
+
+```{r}
+zemr_plot_base +
+  facet_wrap(~vek_txt, scales = "free_y")
+```
+
+### Fixed axes (Full comparison)
+
+```{r}
+zemr_plot_base +
+  facet_wrap(~vek_txt)
+```
+
+## Covid-19 cases overview {.tabset .tabset-pills} 
+
+```{r case-data-load}
+cisokr <- czso_get_codelist(109) %>% 
+  select(okres_lau_kod = CHODNOTA, okres = ZKRTEXT)
+ciskraj <- czso_get_codelist(108) %>% 
+  select(kraj_nuts_kod = CHODNOTA, kraj = ZKRTEXT)
+
+nhs <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/nakaza.csv")
+
+nhs_bd <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.csv") %>% 
+  left_join(cisokr) %>% 
+  left_join(ciskraj)
+
+nhs_okr <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-okres-nakazeni-vyleceni-umrti.csv") %>% 
+  left_join(cisokr) %>% 
+  left_join(ciskraj)
+
+umrti <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/umrti.csv") %>% 
+  left_join(cisokr) %>% 
+  left_join(ciskraj)
+
+epis <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-okres-nakazeni-vyleceni-umrti.csv")
+```
+
+
+```{r okresy-geo-load}
+okresy_p <- CzechData::load_RUIAN_state("okresy") %>%
+  ms_simplify(keep = .01, keep_shapes = T)
+```
+
+
+```{r eval=F}
+lm_okres <- function(df) {
+  lm(kumulativni_pocet_nakazenych ~ as.numeric(datum), data = df)
+}
+
+epis %>% 
+  group_by(okres_lau_kod) %>% 
+  # mutate(kumulativni_pocet_nakazenych = na_if(kumulativni_pocet_nakazenych, 0)) %>% 
+  nest() %>% 
+  mutate(model = map(data, lm_okres)) %>% 
+  mutate(glance = map(model, broom::glance)) %>% 
+  unnest(glance) %>%
+  # select(-data, -model) %>% 
+  ungroup() %>% 
+  skimr::skim()
+```
+
+```{r}
+last_week <- today() - period(1, "week")
+last_week_fmt <- ptrr::format_date_human(last_week)
+```
+
+```{r eval=T}
+nhs_narust <- nhs_bd %>%
+  filter(datum >= last_week) %>%
+  group_by(okres, datum) %>% 
+  summarise(pocet = n(), .groups = "drop") %>% 
+  complete(okres, datum, fill = list(pocet = 0)) %>% 
+  drop_na(okres) %>% 
+  group_by(okres) %>% 
+  filter(sum(pocet) > 5) %>% 
+  arrange(okres, datum) %>%
+  mutate(narust = cumsum(pocet)) %>% 
+  ungroup() %>% 
+  mutate(okres = fct_reorder(okres, narust, max, na.rm = T, .desc = T))
+```
+
+### Growth by district since `r last_week_fmt`
+
+```{r eval=T}
+nhs_narust %>% 
+  filter(max(pocet, na.rm = T) > 0) %>%
+  ggplot(aes(datum, narust)) +
+  geom_line(colour = "darkblue", size = 1) +
+  facet_wrap(facets = vars(okres)) +
+  ptrr::theme_ptrr("y", multiplot = T)
+```
+
+
+```{r eval=F}
+nhs_bd %>% 
+  filter(datum > "2020-07-13") %>%
+  mutate(okr_grp = fct_lump_n(okres, 10, other_level = "Ostatní")) %>%
+  drop_na(okr_grp) %>% 
+  count(okr_grp, sort = F) %>% 
+  ungroup() %>% 
+  mutate(okr_grp = fct_reorder(okr_grp, n, .desc = T) %>% 
+           fct_relevel("Ostatní", after = Inf)) %>% 
+  arrange(okr_grp)
+```
+
+
+```{r eval=T}
+lastpos <- nhs_bd %>% 
+  group_by(okres, okres_lau_kod) %>% 
+  summarise(last_pos = max(datum)) %>% 
+  mutate(days_since_last = today() - last_pos - 1) %>% 
+  arrange(desc(days_since_last))
+
+lastwk <- nhs_bd %>% 
+  filter(datum > last_week) %>% 
+  group_by(okres, okres_lau_kod) %>% 
+  summarise(pocet = n())
+```
+
+### Cases last week
+
+```{r eval=T}
+okresy_p %>% 
+  left_join(lastwk, by = c("lau1_kod" = "okres_lau_kod")) %>% 
+  # replace_na(list(pocet = 0)) %>% 
+  ggplot(aes(fill = as.integer(pocet))) +
+  geom_sf(colour = "grey70") +
+  scale_fill_steps(na.value = "grey") +
+  guides(fill = guide_colourbar(title = NULL, direction = "horizontal")) +
+  theme_void() +
+  theme(legend.position = "bottom")
+```
+
+
+```{r eval=F}
+nhs_bd %>% 
+  mutate(vek_cat = cut(vek, breaks = c(0, 15, 30, 65, 85, Inf))) %>% 
+  count(kraj, vek_cat) %>% 
+  ggplot(aes(n, kraj)) +
+  geom_col(aes(fill = vek_cat), position = "fill")
+```
+
+
+```{r eval=F}
+umrti %>% 
+  mutate(vek_cat = cut(vek, breaks = c(0, 15, 30, 65, 85, Inf))) %>% 
+  count(kraj, vek_cat) %>% 
+  ggplot(aes(n, kraj)) +
+  geom_col(aes(fill = vek_cat), position = "fill")
+```
+
+### Days since last case in each district
+
+```{r eval=T}
+okresy_p %>% 
+  left_join(lastpos, by = c("lau1_kod" = "okres_lau_kod")) %>% 
+  ggplot(aes(fill = as.integer(days_since_last))) +
+  geom_sf() +
+  scale_fill_binned(type = "viridis", direction = 1) +
+  guides(fill = guide_colourbar(title = NULL, direction = "horizontal")) +
+  theme_void() +
+  theme(legend.position = "bottom")
 ```
 
