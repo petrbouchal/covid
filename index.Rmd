@@ -38,52 +38,6 @@ sysfonts::font_add_google("IBM Plex Sans Condensed", "Roboto Condensed")
 
 # {.tabset}
 
-## Mortality statistics {.tabset .tabset-pills}
-
-```{r}
-zmr0 <- czso_get_table("130185", force_redownload = T)
-zmr <- zmr0 %>% 
-  mutate(tyden = as.numeric(tyden),
-         casref_do = as.Date(casref_do),
-         day_sameyear = make_date(1970, month = month(casref_do),
-                                  day = day(casref_do)))  
-
-last_date_fmt <- ptrr::format_date_human(max(zmr$casref_do))
-today_fmt <- ptrr::format_date_human()
-```
-
-
-```{r}
-zemr_plot_base <- zmr %>% 
-  ggplot(aes(day_sameyear, hodnota,
-             alpha = rok == 2020, size = rok == 2020)) +
-  geom_line(aes(colour = as.factor(rok), group = rok)) +
-  scale_alpha_manual(values = c(`TRUE` = 1, `FALSE` = .4), guide = "none") +
-  scale_size_manual(values = c(`TRUE` = .7, `FALSE` = .4), guide = "none") +
-  scale_colour_viridis_d(direction = -1, name = "rok") +
-  ptrr::theme_ptrr("both", multiplot = T, axis.title.x = element_text()) +
-  labs(x = "Týden v roce",
-       subtitle = str_glue("Poslední data k {last_date_fmt}, staženo {today_fmt}"),
-       title = "Počty zemřelých podle týdnů v roce, 2011-2020",
-       caption = "Data: ČSÚ, sada 130185 | @petrbouchal") +
-  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
-  theme(axis.text.x = element_text(hjust = 0))
-```
-
-### Detail (separate axes)
-
-```{r}
-zemr_plot_base +
-  facet_wrap(~vek_txt, scales = "free_y")
-```
-
-### Fixed axes (Full comparison)
-
-```{r}
-zemr_plot_base +
-  facet_wrap(~vek_txt)
-```
-
 ## Covid-19 cases overview {.tabset .tabset-pills} 
 
 ```{r case-data-load}
@@ -241,3 +195,54 @@ okresy_p %>%
   theme(legend.position = c(.8, .8))
 ```
 
+
+## Mortality statistics {.tabset .tabset-pills}
+
+```{r}
+zmr0 <- czso_get_table("130185", force_redownload = T)
+zmr <- zmr0 %>% 
+  mutate(tyden = as.numeric(tyden),
+         casref_do = as.Date(casref_do),
+         day_sameyear = make_date(1970, month = month(casref_do),
+                                  day = day(casref_do)))  
+
+last_date_fmt <- ptrr::format_date_human(max(zmr$casref_do))
+today_fmt <- ptrr::format_date_human()
+```
+
+
+```{r}
+zemr_plot_base <- zmr %>% 
+  ggplot(aes(day_sameyear, hodnota,
+             alpha = rok == 2020, size = rok == 2020)) +
+  geom_line(aes(colour = as.factor(rok), group = rok)) +
+  scale_alpha_manual(values = c(`TRUE` = 1, `FALSE` = .4), guide = "none") +
+  scale_size_manual(values = c(`TRUE` = .7, `FALSE` = .4), guide = "none") +
+  scale_colour_viridis_d(direction = -1, name = "rok") +
+  ptrr::theme_ptrr("both", multiplot = T, axis.title.x = element_text()) +
+  labs(x = "Týden v roce",
+       subtitle = str_glue("Poslední data k {last_date_fmt}, staženo {today_fmt}"),
+       title = "Počty zemřelých podle týdnů v roce, 2011-2020",
+       caption = "Data: ČSÚ, sada 130185 | @petrbouchal") +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+  theme(axis.text.x = element_text(hjust = 0))
+```
+
+### Fixed axes (Full comparison)
+
+```{r}
+zemr_plot_base +
+  facet_wrap(~vek_txt)
+```
+
+### Detail (separate axes)
+
+```{r}
+zemr_plot_base +
+  facet_wrap(~vek_txt, scales = "free_y")
+```
+
+
+# 
+
+Last built on `r Sys.time()`
