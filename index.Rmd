@@ -199,10 +199,12 @@ okresy_p %>%
   # replace_na(list(pocet = 0)) %>% 
   ggplot(aes(fill = as.integer(pocet))) +
   geom_sf(colour = "grey70") +
-  scale_fill_steps(na.value = "grey") +
-  guides(fill = guide_colourbar(title = NULL, direction = "horizontal")) +
+  scale_fill_steps(na.value = "grey", show.limits = T, 
+                   limits = c(min(lastwk$pocet), max(lastwk$pocet))) +
+  guides(fill = guide_coloursteps(title = NULL, direction = "horizontal", 
+                                  show.limits = T, ticks = F)) +
   theme_void() +
-  theme(legend.position = "bottom")
+  theme(legend.position = c(0.8, 0.8))
 ```
 
 
@@ -230,9 +232,12 @@ okresy_p %>%
   left_join(lastpos, by = c("lau1_kod" = "okres_lau_kod")) %>% 
   ggplot(aes(fill = as.integer(days_since_last))) +
   geom_sf() +
-  scale_fill_binned(type = "viridis", direction = 1) +
-  guides(fill = guide_colourbar(title = NULL, direction = "horizontal")) +
+  scale_fill_viridis_b(na.value = "grey", show.limits = T, 
+                    limits = c(min(lastpos$days_since_last),
+                               max(lastpos$days_since_last)) %>% as.integer()) +
+  guides(fill = guide_coloursteps(title = NULL, direction = "horizontal",
+                                  show.limits = T, ticks = F)) +
   theme_void() +
-  theme(legend.position = "bottom")
+  theme(legend.position = c(.8, .8))
 ```
 
