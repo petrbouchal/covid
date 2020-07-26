@@ -3,7 +3,7 @@ output_dir: docs
 include: ["demo.R"]
 exclude: ["LICENSE.md", "*.csv", "*.rds", "renv", "renv.lock"]
 navbar:
-  title: "Basic Covid-19 overview for CZ"
+  title: "Covid-19 CZ overview"
   right:
   - icon: fa-github fa-lg
     href: https://github.com/petrbouchal/covid19
@@ -12,9 +12,7 @@ output:
     css: extra.css
     toc: false
     toc_float: false
-    code_folding: hide
     mathjax: null
     df_print: paged
-    code_download: T
     includes:
       in_header: matomo.html

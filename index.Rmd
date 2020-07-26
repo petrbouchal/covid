@@ -1,10 +1,10 @@
 ---
-title: "Selected Covid-19 data for Czech Republic"
+title: "Covid-19 CZ: selected data for the Czech Republic"
 ---
 
 ```{r setup, include=F}
 
-knitr::opts_chunk$set(fig.retina = 3, echo = F,
+knitr::opts_chunk$set(fig.retina = 3, echo = F, eval = T,
                       warning = F,
                       out.width = "90%",
                       dev = "ragg_png",
@@ -31,7 +31,7 @@ ptrr::set_geom_defaults()
 update_geom_defaults("rect", list(fill = "blue"))
 ```
 
-```{r}
+```{r fonts}
 sysfonts::font_add_google("IBM Plex Sans", "Roboto")
 sysfonts::font_add_google("IBM Plex Sans Condensed", "Roboto Condensed")
 ```
@@ -70,7 +70,7 @@ okresy_p <- CzechData::load_RUIAN_state("okresy") %>%
 ```
 
 
-```{r eval=F}
+```{r model, eval=F}
 lm_okres <- function(df) {
   lm(kumulativni_pocet_nakazenych ~ as.numeric(datum), data = df)
 }
@@ -87,12 +87,12 @@ epis %>%
   skimr::skim()
 ```
 
-```{r}
+```{r weeks, eval = T}
 last_week <- today() - period(1, "week")
 last_week_fmt <- ptrr::format_date_human(last_week)
 ```
 
-```{r eval=T}
+```{r narust}
 nhs_narust <- nhs_bd %>%
   filter(datum >= last_week) %>%
   group_by(okres, datum) %>% 
@@ -109,7 +109,7 @@ nhs_narust <- nhs_bd %>%
 
 ### Growth by district since `r last_week_fmt`
 
-```{r eval=T}
+```{r narust-plot}
 nhs_narust %>% 
   filter(max(pocet, na.rm = T) > 0) %>%
   ggplot(aes(datum, narust)) +
@@ -119,7 +119,7 @@ nhs_narust %>%
 ```
 
 
-```{r eval=F}
+```{r narust-tab, eval=F}
 nhs_bd %>% 
   filter(datum > "2020-07-13") %>%
   mutate(okr_grp = fct_lump_n(okres, 10, other_level = "Ostatní")) %>%
@@ -132,7 +132,7 @@ nhs_bd %>%
 ```
 
 
-```{r eval=T}
+```{r days-since-data}
 lastpos <- nhs_bd %>% 
   group_by(okres, okres_lau_kod) %>% 
   summarise(last_pos = max(datum)) %>% 
@@ -147,22 +147,22 @@ lastwk <- nhs_bd %>%
 
 ### Cases last week
 
-```{r eval=T}
+```{r map-cases}
 okresy_p %>% 
   left_join(lastwk, by = c("lau1_kod" = "okres_lau_kod")) %>% 
   # replace_na(list(pocet = 0)) %>% 
   ggplot(aes(fill = as.integer(pocet))) +
   geom_sf(colour = "grey70") +
-  scale_fill_steps(na.value = "grey", show.limits = T, 
+  scale_fill_steps(na.value = "grey", show.limits = T,
                    limits = c(min(lastwk$pocet), max(lastwk$pocet))) +
-  guides(fill = guide_coloursteps(title = NULL, direction = "horizontal", 
-                                  show.limits = T, ticks = F)) +
+  guides(fill = guide_coloursteps(title = NULL, direction = "vertical", 
+                                  show.limits = T, ticks = F, even.steps = F)) +
   theme_void() +
-  theme(legend.position = c(0.8, 0.8))
+  theme(legend.position = c(0.9, 0.8))
 ```
 
 
-```{r eval=F}
+```{r age, eval=F}
 nhs_bd %>% 
   mutate(vek_cat = cut(vek, breaks = c(0, 15, 30, 65, 85, Inf))) %>% 
   count(kraj, vek_cat) %>% 
@@ -171,7 +171,7 @@ nhs_bd %>%
 ```
 
 
-```{r eval=F}
+```{r age-deaths, eval=F}
 umrti %>% 
   mutate(vek_cat = cut(vek, breaks = c(0, 15, 30, 65, 85, Inf))) %>% 
   count(kraj, vek_cat) %>% 
@@ -181,15 +181,17 @@ umrti %>%
 
 ### Days since last case in each district
 
-```{r eval=T}
+```{r map-days-since}
 okresy_p %>% 
   left_join(lastpos, by = c("lau1_kod" = "okres_lau_kod")) %>% 
   ggplot(aes(fill = as.integer(days_since_last))) +
   geom_sf() +
-  scale_fill_viridis_b(na.value = "grey", show.limits = T, 
-                    limits = c(min(lastpos$days_since_last),
-                               max(lastpos$days_since_last)) %>% as.integer()) +
-  guides(fill = guide_coloursteps(title = NULL, direction = "horizontal",
+  scale_fill_binned(na.value = "grey", show.limits = T, 
+                       limits = c(min(lastpos$days_since_last),
+                                  max(lastpos$days_since_last)) %>%
+                         as.integer()) +
+  guides(fill = guide_coloursteps(even.steps = F,
+                                  title = NULL, direction = "horizontal",
                                   show.limits = T, ticks = F)) +
   theme_void() +
   theme(legend.position = c(.8, .8))
@@ -198,7 +200,7 @@ okresy_p %>%
 
 ## Mortality statistics {.tabset .tabset-pills}
 
-```{r}
+```{r mort-data}
 zmr0 <- czso_get_table("130185", force_redownload = T)
 zmr <- zmr0 %>% 
   mutate(tyden = as.numeric(tyden),
@@ -211,7 +213,7 @@ today_fmt <- ptrr::format_date_human()
 ```
 
 
-```{r}
+```{r mort-base}
 zemr_plot_base <- zmr %>% 
   ggplot(aes(day_sameyear, hodnota,
              alpha = rok == 2020, size = rok == 2020)) +
@@ -224,20 +226,20 @@ zemr_plot_base <- zmr %>%
        subtitle = str_glue("Poslední data k {last_date_fmt}, staženo {today_fmt}"),
        title = "Počty zemřelých podle týdnů v roce, 2011-2020",
        caption = "Data: ČSÚ, sada 130185 | @petrbouchal") +
-  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b", breaks = c(1,3,6, 9, 12)) +
   theme(axis.text.x = element_text(hjust = 0))
 ```
 
 ### Fixed axes (Full comparison)
 
-```{r}
+```{r mort-plot-fixed}
 zemr_plot_base +
   facet_wrap(~vek_txt)
 ```
 
 ### Detail (separate axes)
 
-```{r}
+```{r mort-plot-free}
 zemr_plot_base +
   facet_wrap(~vek_txt, scales = "free_y")
 ```
