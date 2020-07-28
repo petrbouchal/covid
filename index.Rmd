@@ -65,7 +65,7 @@ epis <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-okres
 ```
 
 
-```{r okresy-geo-load}
+```{r okresy-geo-load, cache=T}
 okresy_p <- CzechData::load_RUIAN_state("okresy") %>%
   ms_simplify(keep = .01, keep_shapes = T)
 ```
@@ -115,10 +115,13 @@ nhs_narust %>%
   filter(max(pocet, na.rm = T) > 0) %>%
   ggplot(aes(datum, narust)) +
   geom_line(colour = "darkblue", size = 1) +
+  geom_point(colour = "darkblue", size = 1.5) +
   facet_wrap(facets = vars(okres)) +
+  scale_y_continuous(expand = expansion(add = c(60, 60))) +
   scale_x_date(labels = label_date_short(format = c(NA, "%b", "%d", "%h")), 
                breaks = breaks_width("2 days")) +
-  ptrr::theme_ptrr("y", multiplot = T)
+  ptrr::theme_ptrr("y", multiplot = T) +
+  theme(axis.text.x = element_text(hjust = 0))
 ```
 
 
