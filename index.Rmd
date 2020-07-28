@@ -20,6 +20,7 @@ library(czso)
 library(CzechData)
 library(lubridate)
 library(ptrr)
+library(scales)
 library(fontawesome)
 library(tidyverse)
 library(pragr)
@@ -115,6 +116,8 @@ nhs_narust %>%
   ggplot(aes(datum, narust)) +
   geom_line(colour = "darkblue", size = 1) +
   facet_wrap(facets = vars(okres)) +
+  scale_x_date(labels = label_date_short(format = c(NA, "%b", "%d", "%h")), 
+               breaks = breaks_width("2 days")) +
   ptrr::theme_ptrr("y", multiplot = T)
 ```
 
@@ -153,8 +156,9 @@ okresy_p %>%
   # replace_na(list(pocet = 0)) %>% 
   ggplot(aes(fill = as.integer(pocet))) +
   geom_sf(colour = "grey70") +
-  scale_fill_steps(na.value = "grey", show.limits = T,
-                   limits = c(min(lastwk$pocet), max(lastwk$pocet))) +
+  scale_fill_binned(na.value = "grey", show.limits = T, n.breaks = 6,
+                    type = "viridis",
+                    limits = c(min(lastwk$pocet), max(lastwk$pocet))) +
   guides(fill = guide_coloursteps(title = NULL, direction = "vertical", 
                                   show.limits = T, ticks = F, even.steps = F)) +
   theme_void() +
@@ -186,7 +190,8 @@ okresy_p %>%
   left_join(lastpos, by = c("lau1_kod" = "okres_lau_kod")) %>% 
   ggplot(aes(fill = as.integer(days_since_last))) +
   geom_sf() +
-  scale_fill_binned(na.value = "grey", show.limits = T, 
+  scale_fill_binned(na.value = "grey", show.limits = T, n.breaks = 6,
+                    type = "viridis",
                        limits = c(min(lastpos$days_since_last),
                                   max(lastpos$days_since_last)) %>%
                          as.integer()) +
