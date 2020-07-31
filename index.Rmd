@@ -277,4 +277,4 @@ zemr_plot_base +
 
 # 
 
-Last built on `r lubridate::now(tzone = "CET")`
+Last built on `r format(lubridate::now(), "%Y-%m-%d %H:%M %Z")`
