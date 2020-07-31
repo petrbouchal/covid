@@ -686,6 +686,13 @@
       "Repository": "CRAN",
       "Hash": "58baa74e4603fcfb9a94401c58c8f9b1"
     },
+    "metathis": {
+      "Package": "metathis",
+      "Version": "1.0.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1cdadc4571387eb52ca71765b0f984c3"
+    },
     "mgcv": {
       "Package": "mgcv",
       "Version": "1.8-31",
@@ -850,19 +857,19 @@
       "Repository": "CRAN",
       "Hash": "97def703420c8ab10d8f0e6c72101e02"
     },
+    "ragg": {
+      "Package": "ragg",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a39fa2ccf55e72d5984247ef891217c2"
+    },
     "rappdirs": {
       "Package": "rappdirs",
       "Version": "0.3.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "8c8298583adbbe76f3c2220eef71bebc"
-    },
-    "ragg": {
-      "Package": "ragg",
-      "Version": "0.3.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "55ecadf0808546b2d1e8a06b1658a787"
     },
     "raster": {
       "Package": "raster",
