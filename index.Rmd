@@ -277,4 +277,4 @@ zemr_plot_base +
 
 # 
 
-Last built on `r format(lubridate::now(), "%Y-%m-%d %H:%M %Z")`
+Last built on `r format(lubridate::now("CET"), "%Y-%m-%d %H:%M %Z")`
