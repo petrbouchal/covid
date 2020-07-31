@@ -37,6 +37,27 @@ sysfonts::font_add_google("IBM Plex Sans", "Roboto")
 sysfonts::font_add_google("IBM Plex Sans Condensed", "Roboto Condensed")
 ```
 
+```{r metathis}
+library(metathis)
+
+meta() %>%
+  meta_description(
+    "Vybraná data o Covid-19 v ČR"
+  ) %>% 
+  meta_name("github-repo" = "petrbouchal/covid") %>% 
+  meta_viewport() %>% 
+  meta_social(
+    title = "Czech Track",
+    url = "https://petrbouchal.github.io/covid/",
+    image = "https://petrbouchal.github.io/covid/twitter_card_large.png",
+    image_alt = "Náhled grafu nárůstu případů podle okresů",
+    og_type = "website",
+    og_author = c("Petr Bouchal"),
+    twitter_card_type = "summary_large_image",
+    twitter_creator = "@petrbouchal"
+  )
+```
+
 # {.tabset}
 
 ## Covid-19 cases overview {.tabset .tabset-pills} 
@@ -255,4 +276,4 @@ zemr_plot_base +
 
 # 
 
-Last built on `r Sys.time()`
+Last built on `r lubridate::now(tzone = "CET")`
