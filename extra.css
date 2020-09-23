@@ -2,6 +2,7 @@
 body {font-family: "IBM Plex Sans", "Helvetica", Helvetica, sans-serif, sans}
 
 a {color: #00f}
+a:hover {color: #00f}
 
 .tocify {
   border: 0px;
