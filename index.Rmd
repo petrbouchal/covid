@@ -25,6 +25,7 @@ library(scales)
 library(fontawesome)
 library(tidyverse)
 library(pragr)
+library(ggiraph)
 library(rmapshaper)
 
 Sys.setlocale("LC_TIME", "cs_CZ.UTF-8")
@@ -92,6 +93,20 @@ okresy_p <- CzechData::load_RUIAN_state("okresy") %>%
   ms_simplify(keep = .01, keep_shapes = T)
 ```
 
+```{r populace}
+obyv_praha <- czso_get_table("130141r20") %>% 
+  filter(idhod == "830959865") %>% 
+  select(hodnota) %>% 
+  mutate(okres_lau_kod = "CZ0100")
+
+obyv_okresy <- czso_get_table("130141r20") %>% 
+  filter(vuzemi_cis == "101", vuk_text == "Střední stav obyvatel") %>% 
+  left_join(czso_get_codelist(101) %>% 
+              select(okres_lau_kod = CZNUTS, vuzemi_kod = CHODNOTA)) %>% 
+  rows_insert(obyv_praha) %>% 
+  rename(pocobyv = hodnota)
+```
+
 
 ```{r model, eval=F}
 lm_okres <- function(df) {
@@ -118,14 +133,15 @@ last_week_fmt <- ptrr::format_date_human(last_week)
 ```{r narust}
 nhs_narust <- nhs_bd %>%
   filter(datum >= last_week) %>%
-  group_by(okres, datum) %>% 
+  group_by(okres, okres_lau_kod, datum) %>% 
   summarise(pocet = n(), .groups = "drop") %>% 
   complete(okres, datum, fill = list(pocet = 0)) %>% 
-  drop_na(okres) %>% 
+  drop_na(okres) %>%
+  left_join(obyv_okresy %>% select(okres_lau_kod, pocobyv)) %>% 
   group_by(okres) %>% 
   filter(sum(pocet) > 5) %>% 
   arrange(okres, datum) %>%
-  mutate(narust = cumsum(pocet)) %>% 
+  mutate(narust = cumsum(pocet), narust_perk = narust/pocobyv * 100000) %>% 
   ungroup() %>% 
   mutate(okres = fct_reorder(okres, narust, max, na.rm = T, .desc = T))
 ```
@@ -164,30 +180,63 @@ nhs_bd %>%
 lastpos <- nhs_bd %>% 
   group_by(okres, okres_lau_kod) %>% 
   summarise(last_pos = max(datum)) %>% 
-  mutate(days_since_last = today() - last_pos - 1) %>% 
+  mutate(days_since_last = today() - last_pos) %>% 
   arrange(desc(days_since_last))
 
 lastwk <- nhs_bd %>% 
+  left_join(obyv_okresy %>% select(okres_lau_kod, pocobyv)) %>% 
+  drop_na(okres) %>% 
   filter(datum > last_week) %>% 
   group_by(okres, okres_lau_kod) %>% 
-  summarise(pocet = n())
+  summarise(pocet = n(), pocobyv = mean(pocobyv), pocet_perk = pocet/pocobyv*1000)
 ```
 
 ### Cases last week
 
 ```{r map-cases}
-okresy_p %>% 
+library(patchwork)
+
+okresy_percap_plot <- okresy_p %>% 
   left_join(lastwk, by = c("lau1_kod" = "okres_lau_kod")) %>% 
+  drop_na(okres) %>%
+  mutate(tooltip = paste0(okres, "\n", label_number_cz(.01)(pocet_perk))) %>% 
   # replace_na(list(pocet = 0)) %>% 
-  ggplot(aes(fill = as.integer(pocet))) +
-  geom_sf(colour = "grey70") +
-  scale_fill_binned(na.value = "grey", show.limits = T, n.breaks = 6,
-                    type = "viridis",
-                    limits = c(min(lastwk$pocet), max(lastwk$pocet))) +
-  guides(fill = guide_coloursteps(title = NULL, direction = "vertical", 
-                                  show.limits = T, ticks = F, even.steps = F)) +
+  ggplot(aes(fill = pocet_perk, data_id = lau1_kod, tooltip = tooltip)) +
+  geom_sf_interactive(colour = NA) +
+  scale_fill_binned(na.value = "grey", n.breaks = 6,
+                    labels = label_number_cz(accuracy = .01),
+                    type = scale_fill_viridis_c, option = "D",
+                    limits = c(min(lastwk$pocet_perk), max(lastwk$pocet_perk))) +
+  guides(fill = guide_bins(title = NULL, direction = "vertical", override.aes = list(colour = NA),
+                           show.limits = T, ticks = F, even.steps = T, axis = T, reverse = F)) +
   theme_void() +
-  theme(legend.position = c(0.9, 0.8))
+  theme(legend.position = "right", legend.justification = 0) +
+  labs(title = "Počet nových případů za posledních 7 dní",
+       subtitle = "Na 100 tisíc obyvatel")
+
+okresy_abs_plot <- okresy_p %>% 
+  left_join(lastwk, by = c("lau1_kod" = "okres_lau_kod")) %>% 
+  drop_na(okres) %>%
+  mutate(tooltip = paste0(okres, "\n", label_number_cz(1)(pocet))) %>% 
+  # replace_na(list(pocet = 0)) %>% 
+  ggplot(aes(fill = pocet, data_id = lau1_kod, tooltip = tooltip)) +
+  geom_sf_interactive(colour = NA) +
+  scale_fill_binned(na.value = "grey", n.breaks = 7,
+                    labels = label_number_cz(accuracy = 1),
+                    limits = c(min(lastwk$pocet), max(lastwk$pocet)),
+                    type = scale_fill_viridis_c, option = "D"
+                    ) +
+  guides(fill = guide_bins(title = NULL, direction = "vertical", 
+                           override.aes = list(colour = NA),
+                           show.limits = T, ticks = F, even.steps = T, axis = T, reverse = F)) +
+  theme_void() +
+  theme(legend.position = "right", legend.justification = 0) +
+  labs(subtitle = "Absolutně")
+
+girafe(code = print(okresy_percap_plot / okresy_abs_plot), fonts = list(sans = "IBM Plex Sans"), 
+       options = list(opts_sizing(width = 1),
+                      opts_tooltip(css = "font-family: IBM Plex Sans; color:white; background-color: black; padding:6px;border-radius:5px;"),
+                      opts_hover(css = "stroke: white")))
 ```
 
 
@@ -211,20 +260,27 @@ umrti %>%
 ### Days since last case in each district
 
 ```{r map-days-since}
-okresy_p %>% 
+lastpos_ch <- okresy_p %>% 
   left_join(lastpos, by = c("lau1_kod" = "okres_lau_kod")) %>% 
-  ggplot(aes(fill = as.integer(days_since_last))) +
-  geom_sf() +
+  drop_na(okres)
+
+lastpos_g <- ggplot(lastpos_ch, aes(fill = as.integer(days_since_last))) +
+  geom_sf_interactive(aes(data_id = okres, tooltip = paste0(okres, "\n", days_since_last))) +
   scale_fill_binned(na.value = "grey", show.limits = T, n.breaks = 6,
                     type = "viridis",
-                       limits = c(min(lastpos$days_since_last),
-                                  max(lastpos$days_since_last)) %>%
-                         as.integer()) +
+                    limits = c(min(lastpos_ch$days_since_last),
+                               max(lastpos_ch$days_since_last)) %>%
+                      as.integer()) +
   guides(fill = guide_coloursteps(even.steps = F,
                                   title = NULL, direction = "horizontal",
                                   show.limits = T, ticks = F)) +
   theme_void() +
   theme(legend.position = c(.8, .8))
+
+girafe(ggobj = lastpos_g, fonts = list(sans = "IBM Plex Sans"), 
+       options = list(opts_sizing(width = 1),
+                      opts_tooltip(css = "font-family: IBM Plex Sans; color:white; background-color: black; padding:6px;border-radius:5px;"),
+                      opts_hover(css = "stroke: white")))
 ```
 
 
