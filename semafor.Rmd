@@ -109,7 +109,7 @@ okresmngg <- ggplot(okres_mean_smfr) +
                            show.limits = T
                            )) +
   labs(x = "Podíl nákazy v zahraničí na celku",
-  	   subtitle = "Denní průměry za posledních 7 dní"
+  	   subtitle = "Denní průměry za posledních 7 dní",
        y = "Podíl osob starších 65 let na nakažených", 
        fill = "Počet\nnových případů/den\nna 1000 obyvatel",
        size = "Počet\nnových případů/den")
