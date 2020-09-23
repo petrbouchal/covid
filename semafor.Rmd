@@ -1,0 +1,122 @@
+---
+title: "Typologie okresů podle "
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r setup, include=F}
+knitr::opts_chunk$set(fig.retina = 3, echo = F, eval = T,
+                      warning = F,
+                      out.width = "90%",
+                      dev = "ragg_png",
+                      fig.showtext = T,
+                      message = F)
+
+library(tidyverse)
+library(lubridate)
+library(czso)
+library(ptrr)
+library(scales)
+library(ggiraph)
+```
+
+
+```{r}
+ck <- czso::czso_get_catalogue()
+
+# ck %>% 
+#   filter(str_detect(title, "okres")) %>% 
+#   filter(str_detect(title, "obyvat"))
+
+obyv_praha <- czso_get_table("130141r20") %>% 
+  filter(idhod == "830959865") %>% 
+  select(idhod, hodnota, vuzemi_txt) %>% 
+  mutate(okres_lau_kod = "CZ0100")
+
+obyv_okresy <- czso_get_table("130141r20") %>% 
+  filter(vuzemi_cis == "101", vuk_text == "Střední stav obyvatel") %>% 
+  left_join(czso_get_codelist(101) %>% 
+              select(okres_lau_kod = CZNUTS, vuzemi_kod = CHODNOTA)) %>% 
+  rows_insert(obyv_praha) %>% 
+  rename(pocobyv = hodnota)
+```
+
+```{r}
+cisokr <- czso_get_codelist(109) %>% 
+  select(okres_lau_kod = CHODNOTA, okres = ZKRTEXT)
+ciskraj <- czso_get_codelist(108) %>% 
+  select(kraj_nuts_kod = CHODNOTA, kraj = ZKRTEXT)
+```
+
+
+```{r}
+nhs_bd <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.csv") %>% 
+  left_join(cisokr) %>% 
+  left_join(ciskraj)
+```
+
+
+
+```{r, include = F}
+setdiff(obyv_okresy$okres_lau_kod, nhs_bd$okres_lau_kod)
+setdiff(nhs_bd$okres_lau_kod, obyv_okresy$okres_lau_kod)
+```
+
+```{r}
+last_week <- today() - period(1, "week")
+
+okres_mean_smfr <- nhs_bd %>% 
+  filter(datum >= last_week) %>%
+  left_join(obyv_okresy) %>% 
+  replace_na(list(nakaza_v_zahranici = 0)) %>% 
+  ungroup() %>% 
+  # count(okres_lau_kod)
+  group_by(okres_lau_kod, okres) %>% 
+  summarise(pocet = n()/7,
+            pocet_per1k = n()/7/mean(pocobyv) * 100000,
+            podil_zahr = mean(nakaza_v_zahranici),
+            podil_stari = mean(vek > 65),
+            .groups = "drop")
+```
+
+
+```{r}
+okresmngg <- ggplot(okres_mean_smfr) +
+  geom_point_interactive(aes(x = podil_zahr, y = podil_stari, 
+                             size = pocet,
+                             id = okres, 
+                             fill = pocet_per1k,
+                             tooltip = paste(okres, "\n",
+                                             "\npříp./den na 1k: ", 
+                                             label_number_cz(1)(pocet_per1k),
+                                             "\npočet případů/den: ", label_number(1)(pocet))),
+             colour = "darkgrey",
+             shape = 21) +
+  theme_ptrr("both", axis.title = element_text()) +
+  scale_x_percent_cz(limits = c(0, NA)) +
+  scale_y_percent_cz(limits = c(0, NA)) +
+  scale_size_binned_area() +
+  scale_fill_binned(n.breaks = 2, nice.breaks = F, show.limits = T,
+                    labels = label_number_cz(.1),
+                    type = scale_fill_fermenter, palette = "RdYlGn") +
+  guides(fill = guide_colorsteps_interactive(even.steps = T,
+                                             tooltip = "pocet_percap", label.hjust = 1),
+         size = guide_bins(override.aes = list(colour = "darkgrey", fill = "darkgrey",
+                                               shape = 16), axis = T, 
+                           # reverse = T,
+                           show.limits = T
+                           )) +
+  labs(x = "Podíl nákazy v zahraničí na celku",
+       y = "Podíl osob starších 65 let na nakažených", 
+       fill = "Počet\nnových případů/den\nna 1000 obyvatel",
+       size = "Počet\nnových případů/den")
+  
+
+girafe(ggobj = okresmngg,
+       options = list(opts_sizing(width = 1),
+                      opts_tooltip(css = "font-family: IBM Plex Sans; color:white; background-color: black; padding:6px;border-radius:5px;"),
+                      opts_hover(css = "stroke: white")))
+```
+
