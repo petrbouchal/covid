@@ -89,7 +89,7 @@ okresmngg <- ggplot(okres_mean_smfr) +
                              id = okres, 
                              fill = pocet_per1k,
                              tooltip = paste(okres, "\n",
-                                             "\npříp./den na 1k: ", 
+                                             "\npříp./den na 100k: ", 
                                              label_number_cz(1)(pocet_per1k),
                                              "\npočet případů/den: ", label_number(1)(pocet))),
              colour = "darkgrey",
@@ -111,7 +111,7 @@ okresmngg <- ggplot(okres_mean_smfr) +
   labs(x = "Podíl nákazy v zahraničí na celku",
   	   subtitle = "Denní průměry za posledních 7 dní",
        y = "Podíl osob starších 65 let na nakažených", 
-       fill = "Počet\nnových případů/den\nna 1000 obyvatel",
+       fill = "Počet\nnových případů/den\nna 100 tis. obyvatel",
        size = "Počet\nnových případů/den")
   
 
