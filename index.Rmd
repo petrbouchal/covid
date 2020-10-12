@@ -205,7 +205,7 @@ okresy_percap_plot <- okresy_p %>%
   geom_sf_interactive(colour = NA) +
   scale_fill_binned(na.value = "grey", n.breaks = 6,
                     labels = label_number_cz(accuracy = .01),
-                    type = scale_fill_viridis_c, option = "D",
+                    type = "viridis",
                     limits = c(min(lastwk$pocet_perk), max(lastwk$pocet_perk))) +
   guides(fill = guide_bins(title = NULL, direction = "vertical", override.aes = list(colour = NA),
                            show.limits = T, ticks = F, even.steps = T, axis = T, reverse = F)) +
@@ -224,7 +224,7 @@ okresy_abs_plot <- okresy_p %>%
   scale_fill_binned(na.value = "grey", n.breaks = 7,
                     labels = label_number_cz(accuracy = 1),
                     limits = c(min(lastwk$pocet), max(lastwk$pocet)),
-                    type = scale_fill_viridis_c, option = "D"
+                    type = "viridis"
                     ) +
   guides(fill = guide_bins(title = NULL, direction = "vertical", 
                            override.aes = list(colour = NA),
