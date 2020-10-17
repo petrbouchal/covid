@@ -418,7 +418,7 @@ umrti_heatmap_dt <- umrti_grid %>%
 ```{r}
 make_plot_base(umrti_heatmap_dt) +
   scale_fill_viridis_c(option = "B", labels = label_number_cz(1),
-                       name = "Podíl věkové skupiny v daném týdnu") + 
+                       name = "Počet úmrtí v daném týdnu") + 
   geom_tile(aes(week_starting, vek, fill = pocet)) +
   labs(title = "Úmrtí podle věku",
        subtitle = "Průměrný denní počet úmrtní v daném týdnu",
