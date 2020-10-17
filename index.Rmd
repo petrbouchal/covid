@@ -475,14 +475,14 @@ zemr_plot_base <- zmr %>%
   theme(axis.text.x = element_text(hjust = 0))
 ```
 
-### Fixed axes (Full comparison)
+### Full comparison (one y-axis)
 
 ```{r mort-plot-fixed}
 zemr_plot_base +
   facet_wrap(~vek_txt)
 ```
 
-### Detail (separate axes)
+### Detail (separate y-axes)
 
 ```{r mort-plot-free}
 zemr_plot_base +
