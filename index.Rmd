@@ -158,7 +158,7 @@ lastwk <- nhs_bd %>%
   drop_na(okres) %>% 
   filter(datum > last_week) %>% 
   group_by(okres, okres_lau_kod) %>% 
-  summarise(pocet = n(), pocobyv = mean(pocobyv), pocet_perk = pocet/pocobyv*1000)
+  summarise(pocet = n(), pocobyv = mean(pocobyv), pocet_perk = pocet/pocobyv*100000)
 ```
 
 ### Cases last 7 days
@@ -174,7 +174,7 @@ okresy_percap_plot <- okresy_p %>%
   ggplot(aes(fill = pocet_perk, data_id = lau1_kod, tooltip = tooltip)) +
   geom_sf_interactive(colour = NA) +
   scale_fill_binned(na.value = "grey", n.breaks = 6,
-                    labels = label_number_cz(accuracy = .01),
+                    labels = label_number_cz(accuracy = 1),
                     type = "viridis",
                     limits = c(min(lastwk$pocet_perk), max(lastwk$pocet_perk))) +
   guides(fill = guide_bins(title = NULL, direction = "vertical", override.aes = list(colour = NA),
