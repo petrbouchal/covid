@@ -146,36 +146,6 @@ nhs_narust <- nhs_bd %>%
   mutate(okres = fct_reorder(okres, narust, max, na.rm = T, .desc = T))
 ```
 
-### Growth by district since `r last_week_fmt`
-
-```{r narust-plot}
-nhs_narust %>% 
-  filter(max(pocet, na.rm = T) > 0) %>%
-  ggplot(aes(datum, narust)) +
-  geom_line(colour = "darkblue", size = 1) +
-  geom_point(colour = "darkblue", size = 1.5) +
-  facet_wrap(facets = vars(okres)) +
-  scale_y_continuous(expand = expansion(add = c(60, 60))) +
-  scale_x_date(labels = label_date_short(format = c(NA, "%b", "%d", "%h")), 
-               breaks = breaks_width("2 days")) +
-  ptrr::theme_ptrr("y", multiplot = T) +
-  theme(axis.text.x = element_text(hjust = 0))
-```
-
-
-```{r narust-tab, eval=F}
-nhs_bd %>% 
-  filter(datum > "2020-07-13") %>%
-  mutate(okr_grp = fct_lump_n(okres, 10, other_level = "Ostatní")) %>%
-  drop_na(okr_grp) %>% 
-  count(okr_grp, sort = F) %>% 
-  ungroup() %>% 
-  mutate(okr_grp = fct_reorder(okr_grp, n, .desc = T) %>% 
-           fct_relevel("Ostatní", after = Inf)) %>% 
-  arrange(okr_grp)
-```
-
-
 ```{r days-since-data}
 lastpos <- nhs_bd %>% 
   group_by(okres, okres_lau_kod) %>% 
