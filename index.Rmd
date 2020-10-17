@@ -239,27 +239,40 @@ girafe(code = print(okresy_percap_plot / okresy_abs_plot), fonts = list(sans = "
                       opts_hover(css = "stroke: white")))
 ```
 
+### Growth by district since `r last_week_fmt`
 
-```{r age, eval=F}
+
+
+```{r narust-plot}
+nhs_narust %>% 
+  filter(max(pocet, na.rm = T) > 0) %>%
+  ggplot(aes(datum, narust)) +
+  geom_line(colour = "darkblue", size = 1) +
+  geom_point(colour = "darkblue", size = 1.5) +
+  facet_wrap(facets = vars(okres), scales = "free_y") +
+  scale_y_continuous(expand = expansion(add = c(60, 60))) +
+  scale_x_date(labels = label_date_short(format = c(NA, "%b", "%d", "%h")), 
+               breaks = breaks_width("2 days")) +
+  ptrr::theme_ptrr("y", multiplot = T) +
+  theme(axis.text.x = element_text(hjust = 0))
+```
+
+
+```{r narust-tab, eval=F}
 nhs_bd %>% 
-  mutate(vek_cat = cut(vek, breaks = c(0, 15, 30, 65, 85, Inf))) %>% 
-  count(kraj, vek_cat) %>% 
-  ggplot(aes(n, kraj)) +
-  geom_col(aes(fill = vek_cat), position = "fill")
+  filter(datum > "2020-07-13") %>%
+  mutate(okr_grp = fct_lump_n(okres, 10, other_level = "Ostatní")) %>%
+  drop_na(okr_grp) %>% 
+  count(okr_grp, sort = F) %>% 
+  ungroup() %>% 
+  mutate(okr_grp = fct_reorder(okr_grp, n, .desc = T) %>% 
+           fct_relevel("Ostatní", after = Inf)) %>% 
+  arrange(okr_grp)
 ```
 
 
-```{r age-deaths, eval=F}
-umrti %>% 
-  mutate(vek_cat = cut(vek, breaks = c(0, 15, 30, 65, 85, Inf))) %>% 
-  count(kraj, vek_cat) %>% 
-  ggplot(aes(n, kraj)) +
-  geom_col(aes(fill = vek_cat), position = "fill")
-```
-
+```{r map-days-since, eval=F}
 ### Days since last case in each district
-
-```{r map-days-since}
 lastpos_ch <- okresy_p %>% 
   left_join(lastpos, by = c("lau1_kod" = "okres_lau_kod")) %>% 
   drop_na(okres)
