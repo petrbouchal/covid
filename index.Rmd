@@ -283,6 +283,165 @@ girafe(ggobj = lastpos_g, fonts = list(sans = "IBM Plex Sans"),
                       opts_hover(css = "stroke: white")))
 ```
 
+## Cases by age {.tabset .tabset-pills} 
+
+```{r age-grid}
+cases_base <- nhs_bd %>% 
+  filter(datum > "2020-08-01", vek < 130) %>% 
+  mutate(vek = cut_width(vek, width = 15, boundary = 0, ordered_result = T) %>% 
+           fct_relabel(str_remove_all, "\\(|\\)|\\]|\\[") %>% 
+           fct_relabel(str_replace, "\\,", " - "),
+         pocet = 1)
+
+cases_grid <- cases_base %>% 
+  select(datum, kraj, vek) %>% 
+  expand(kraj, datum = full_seq(datum, 1), vek)
+```
+
+```{r}
+make_plot_base <- function(data) {ggplot(data) + 
+  guides(fill = guide_colorbar(title.position = "left", barwidth = unit(5, "cm"), 
+                               draw.ulim = T, 
+                               title.vjust = .75)) +
+  ptrr::theme_ptrr(multiplot = F, 
+                   axis.text = element_text(colour = "black"),
+                   axis.text.x = element_text(hjust = 0),
+                   axis.title.x = element_text(hjust = 0, 
+                                               margin = margin(c(0.4,0,0,0), "cm")),
+                   legend.position = "bottom",
+                   legend.margin = unit(c(0,0,0,0), "cm"),
+                   legend.box.margin = unit(c(0,0,0,0), "cm"),
+                   legend.direction = "horizontal") +
+  scale_x_date(date_breaks = "week", labels = label_date_short(),
+               expand = expansion(0, 0))}
+```
+
+
+```{r age-heatmap-base}
+heatmap_basedt <- cases_grid %>% 
+  left_join(cases_base) %>% 
+  mutate(week = isoweek(datum)) %>% 
+  mutate(datum =  as.Date(paste(2020, week, 1, sep="-"), "%Y-%U-%u") - days(6))
+
+heatmap_basedt_kraje <- heatmap_basedt %>% 
+  group_by(kraj, datum, vek) %>%
+  filter(datum > "2020-08-01") %>% 
+  summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum), .groups = "drop") %>% 
+  complete(kraj, datum, vek) %>%
+  replace_na(replace = list(pocet = 0)) %>% 
+  group_by(kraj, datum) %>%
+  mutate(all_ages = sum(pocet, na.rm = T)) %>% 
+  group_by(kraj, datum) %>%
+  mutate(podil = pocet/all_ages) %>% 
+  drop_na(kraj)
+
+heatmap_basedt_cr <- heatmap_basedt %>% 
+  group_by(datum, vek) %>% 
+  filter(datum > "2020-08-01") %>% 
+  summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum), .groups = "drop") %>% 
+  complete(datum, vek) %>% 
+  replace_na(replace = list(pocet = 0)) %>% 
+  group_by(datum) %>% 
+  mutate(all_ages = sum(pocet, na.rm = T)) %>% 
+  group_by(datum) %>% 
+  mutate(podil = pocet/all_ages)
+```
+
+### National
+
+```{r age-heatmap-cr-count}
+make_plot_base(heatmap_basedt_cr) +
+  scale_fill_viridis_c(option = "B", labels = label_number_cz(),
+                       n.breaks = 6,
+                       name = "Průměrný denní počet nových případů") + 
+  geom_tile(aes(datum, vek, fill = pocet)) +
+  labs(title = "Nové případy podle věku, po týdnech", x = "Týden začínající...",
+       subtitle = "Průměrný denní počet nových případů v daném týdnu")
+```
+
+### National (%)
+
+```{r age-heatmap-cr-share}
+make_plot_base(heatmap_basedt_cr) +
+  scale_fill_viridis_c(option = "B", labels = label_percent_cz(1),
+                       name = "Podíl věkové skupiny v daném týdnu") + 
+  geom_tile(aes(datum, vek, fill = podil)) +
+  guides(fill = guide_colorbar(title.position = "left", barwidth = unit(5, "cm"), 
+                               title.vjust = .75)) +
+  labs(title = "Věkové složení nových případů po týdnech", subtitle = "",
+       x = "Týden začínající...", y = NULL)
+```
+
+### By region
+
+```{r age-heatmap-kraje-count}
+make_plot_base(heatmap_basedt_kraje) +
+  scale_fill_viridis_c(option = "B", labels = label_number_cz(),
+                       n.breaks = 6,
+                       name = "Denní počet nových případů") + 
+  facet_wrap(~ kraj) +
+  geom_tile(aes(datum, vek, fill = pocet)) +
+  guides(fill = guide_colorbar(title.position = "top", barwidth = unit(5, "cm"))) +
+  theme(legend.position = c(.75, .02),
+        axis.text = element_text(size = 8)) +
+  labs(title = "Nové případy podle věku, po týdnech",
+       x = "Týden začínající...")
+```
+
+### By region (%)
+
+```{r age-heatmap-kraje-share}
+make_plot_base(heatmap_basedt_kraje) +
+  scale_fill_viridis_c(option = "B", labels = label_percent_cz(1),
+                       name = "Podíl věkové skupiny v daném týdnu") + 
+  facet_wrap(~ kraj) +
+  geom_tile(aes(datum, vek, fill = podil)) +
+  guides(fill = guide_colorbar(title.position = "top", barwidth = unit(5, "cm"))) +
+  theme(legend.position = c(.75, .02), , 
+        legend.margin = unit(c(0,0,0,0), "cm"),
+        legend.direction = "horizontal",
+        axis.text = element_text(size = 8)) +
+  labs(title = "Věkové složení nových případů po týdnech",
+       x = "Týden začínající...")
+```
+
+## Deaths by age
+
+```{r}
+umrti_base <- umrti %>% 
+  mutate(vek = cut_width(vek, width = 10, boundary = 0, ordered_result = T) %>% 
+           fct_relabel(str_remove_all, "\\(|\\)|\\]|\\[") %>% 
+           fct_relabel(str_replace, "\\,", " - "),
+         pocet = 1)
+
+umrti_grid <- umrti_base %>% 
+  select(vek, datum) %>% 
+  expand(vek, datum = full_seq(datum, 1))
+
+umrti_heatmap_dt <- umrti_grid %>% 
+  left_join(umrti_base) %>% 
+  mutate(week = isoweek(datum),
+         week_starting = as.Date(paste(2020, week, 1, sep="-"), "%Y-%U-%u") - days(6)) %>% 
+  group_by(week_starting, vek) %>%
+  summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum), .groups = "drop") %>% 
+  replace_na(replace = list(pocet = 0)) %>% 
+  group_by(week_starting) %>%
+  mutate(weekly_total = sum(pocet, na.rm = T)) %>% 
+  group_by(week_starting) %>%
+  mutate(podil = pocet/weekly_total)
+```
+
+
+```{r}
+make_plot_base(umrti_heatmap_dt) +
+  scale_fill_viridis_c(option = "B", labels = label_number_cz(1),
+                       name = "Podíl věkové skupiny v daném týdnu") + 
+  geom_tile(aes(week_starting, vek, fill = pocet)) +
+  labs(title = "Úmrtí podle věku",
+       subtitle = "Průměrný denní počet úmrtní v daném týdnu",
+       x = "Týden začínající...")
+```
+
 
 ## Mortality statistics {.tabset .tabset-pills}
 
