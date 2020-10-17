@@ -62,7 +62,7 @@ meta() %>%
 
 # {.tabset}
 
-## Covid-19 cases overview {.tabset .tabset-pills} 
+## Cases by district {.tabset .tabset-pills} 
 
 ```{r case-data-load}
 cisokr <- czso_get_codelist(109) %>% 
