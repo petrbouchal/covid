@@ -2,13 +2,13 @@
 
 <!-- badges: start -->
 
-![Render and Deploy RMarkdown Website](https://github.com/petrbouchal/covid19/workflows/Render and Deploy RMarkdown Website/badge.svg)
+![Render and Deploy RMarkdown Website](https://github.com/petrbouchal/covid19/workflows/Render%20and%20Deploy%20RMarkdown%20Website/badge.svg)
 
 <!-- badges: end -->
 
 This repository contains code that generates a dashboard using open data on Covid-19 cases and deaths in the Czech Republic, and on all-cause mortality to understand excess deaths.
 
-The goal is to provide some of the comparisons that official sources (e.g. the Czech Health Ministry at [<https://onemocneni-aktualne.mzcr.cz/covid-19>](https://onemocneni-aktualne.mzcr.cz/covid-19){.uri}) do not provide - namely a per-district view of recent cases and the age breakdown of cases and deaths over time.
+The goal is to provide some of the comparisons that official sources (e.g. the Czech Health Ministry at <https://onemocneni-aktualne.mzcr.cz/covid-19> do not provide - namely a per-district view of recent cases and the age breakdown of cases and deaths over time.
 
 The Covid-19 data comes from UZIS, the Czech health data authority, via data published by the Czech Ministstry of Health at <https://onemocneni-aktualne.mzcr.cz/covid-19>.
 
