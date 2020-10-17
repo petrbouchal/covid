@@ -161,7 +161,7 @@ lastwk <- nhs_bd %>%
   summarise(pocet = n(), pocobyv = mean(pocobyv), pocet_perk = pocet/pocobyv*1000)
 ```
 
-### Cases last week
+### Cases last 7 days
 
 ```{r map-cases}
 library(patchwork)
