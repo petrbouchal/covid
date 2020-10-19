@@ -303,13 +303,14 @@ make_plot_base <- function(data) {ggplot(data) +
 ```{r age-heatmap-base}
 heatmap_basedt <- cases_grid %>% 
   left_join(cases_base) %>% 
-  mutate(week = isoweek(datum)) %>% 
+  mutate(week = isoweek(datum),
+         datum_orig = datum) %>% 
   mutate(datum =  as.Date(paste(2020, week, 1, sep="-"), "%Y-%U-%u") - days(6))
 
 heatmap_basedt_kraje <- heatmap_basedt %>% 
   group_by(kraj, datum, vek) %>%
   filter(datum > "2020-08-01") %>% 
-  summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum), .groups = "drop") %>% 
+  summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum_orig), .groups = "drop") %>% 
   complete(kraj, datum, vek) %>%
   replace_na(replace = list(pocet = 0)) %>% 
   group_by(kraj, datum) %>%
@@ -321,7 +322,7 @@ heatmap_basedt_kraje <- heatmap_basedt %>%
 heatmap_basedt_cr <- heatmap_basedt %>% 
   group_by(datum, vek) %>% 
   filter(datum > "2020-08-01") %>% 
-  summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum), .groups = "drop") %>% 
+  summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum_orig), .groups = "drop") %>% 
   complete(datum, vek) %>% 
   replace_na(replace = list(pocet = 0)) %>% 
   group_by(datum) %>% 
