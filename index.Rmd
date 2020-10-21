@@ -88,9 +88,14 @@ epis <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-okres
 ```
 
 
-```{r okresy-geo-load, cache=T}
+```{r okresy-geo-build, cache=T, eval=F}
 okresy_p <- CzechData::load_RUIAN_state("okresy") %>%
   ms_simplify(keep = .01, keep_shapes = T)
+write_rds(okresy_p, "okresy_polygons.rds")
+```
+
+```{r okresy-geo-load}
+okresy_p <- read_rds("okresy_polygons.rds")
 ```
 
 ```{r populace}
