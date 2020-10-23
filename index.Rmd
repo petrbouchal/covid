@@ -209,7 +209,8 @@ okresy_abs_plot <- okresy_p %>%
         text = element_text(family = "IBM Plex Sans")) +
   labs(subtitle = "Absolutně")
 
-girafe(code = print(okresy_percap_plot / okresy_abs_plot), fonts = list(sans = "IBM Plex Sans"), 
+girafe(code = print(okresy_percap_plot / okresy_abs_plot), 
+       fonts = list(sans = "IBM Plex Sans"), 
        options = list(opts_sizing(width = 1),
                       opts_tooltip(css = "font-family: IBM Plex Sans; color:white; background-color: black; padding:6px;border-radius:5px;"),
                       opts_hover(css = "stroke: white")))
