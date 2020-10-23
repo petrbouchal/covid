@@ -205,7 +205,8 @@ okresy_abs_plot <- okresy_p %>%
                            override.aes = list(colour = NA),
                            show.limits = T, ticks = F, even.steps = T, axis = T, reverse = F)) +
   theme_void() +
-  theme(legend.position = "right", legend.justification = 0) +
+  theme(legend.position = "right", legend.justification = 0,
+        text = element_text(family = "IBM Plex Sans")) +
   labs(subtitle = "Absolutně")
 
 girafe(code = print(okresy_percap_plot / okresy_abs_plot), fonts = list(sans = "IBM Plex Sans"), 
