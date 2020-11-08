@@ -62,7 +62,7 @@ meta() %>%
 
 # {.tabset}
 
-## Cases by district {.tabset .tabset-pills} 
+## Cases: district {.tabset .tabset-pills} 
 
 ```{r case-data-load}
 cisokr <- czso_get_codelist(109) %>% 
@@ -267,7 +267,7 @@ girafe(ggobj = lastpos_g, fonts = list(sans = "IBM Plex Sans"),
                       opts_hover(css = "stroke: white")))
 ```
 
-## Cases by age {.tabset .tabset-pills} 
+## Cases: age {.tabset .tabset-pills} 
 
 ```{r age-grid}
 cases_base <- nhs_bd %>% 
@@ -390,7 +390,7 @@ make_plot_base(heatmap_basedt_kraje) +
        x = "Týden začínající...")
 ```
 
-## Deaths by age
+## Deaths: age
 
 ```{r}
 umrti_base <- umrti %>% 
@@ -563,12 +563,13 @@ zemr_plot_base +
   facet_wrap(~vek_txt, scales = "free_y")
 ```
 
-## Mortality: Covid vs. rest
+## Mortality: Covid v. rest
 
 ```{r}
 
 ```
 
+## Mobility
 
 ## Data & disclaimer
 
