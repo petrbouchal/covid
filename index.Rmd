@@ -179,7 +179,8 @@ okresy_percap_plot <- okresy_p %>%
   guides(fill = guide_bins(title = NULL, direction = "vertical", override.aes = list(colour = NA),
                            show.limits = T, ticks = F, even.steps = T, axis = T, reverse = F)) +
   theme_void() +
-  theme(legend.position = "right", legend.justification = 0) +
+  theme(legend.position = "right", legend.justification = 0,
+        text = element_text(family = "IBM Plex Sans")) +
   labs(title = "Počet nových případů za posledních 7 dní",
        subtitle = "Na 100 tisíc obyvatel")
 
