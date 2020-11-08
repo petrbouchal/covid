@@ -446,7 +446,7 @@ today_fmt <- ptrr::format_date_human()
 ```{r time-adjusting-load}
 vek <- read_rds("vek.rds")
 vek_ciselnik <- read_rds("vek_ciselnik.rds")
-vek_prevodnik <- read_rds("vek-prevodnik.rds")
+vek_prevodnik <- read_csv("vek-prevodnik.csv")
 ```
 
 
