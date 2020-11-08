@@ -1,7 +1,7 @@
 name: Covid-19 CZ
 output_dir: docs
 include: ["demo.R"]
-exclude: ["LICENSE.md", "*.csv", "*.rds", "renv", "renv.lock"]
+exclude: ["LICENSE.md", "*.csv", "*.rds", "renv", "renv.lock", "google"]
 navbar:
   title: "Covid-19 CZ overview"
   right:
