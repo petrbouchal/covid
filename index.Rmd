@@ -501,7 +501,7 @@ lbs_blue <- tribble(~vek_txt, ~day_sameyear_floored, ~min, ~txt,
 ```
 
 
-```{r age-adjusted-plot}
+```{r age-adjusted-plot, fig.asp=0.6}
 ggplot(data = zmr_bands, mapping = aes(group = vek_txt)) +
   geom_ribbon(data = zmr_bands %>% filter(!is2020),
               alpha = 0.3,
@@ -551,14 +551,14 @@ zemr_plot_base <- zmr %>%
 
 ### Raw counts (comparison)
 
-```{r mort-plot-fixed}
+```{r mort-plot-fixed, fig.asp=0.6}
 zemr_plot_base +
   facet_wrap(~vek_txt)
 ```
 
 ### Raw counts (detail)
 
-```{r mort-plot-free}
+```{r mort-plot-free, fig.asp=0.6}
 zemr_plot_base +
   facet_wrap(~vek_txt, scales = "free_y")
 ```
