@@ -436,7 +436,8 @@ zmr <- zmr0 %>%
   mutate(tyden = as.numeric(tyden),
          casref_do = as.Date(casref_do),
          day_sameyear = make_date(1970, month = month(casref_do),
-                                  day = day(casref_do)))  
+                                  day = day(casref_do))) %>% 
+  mutate(vek_txt = fct_relevel(vek_txt, "celkem"))
 
 last_date_fmt <- ptrr::format_date_human(max(zmr$casref_do))
 today_fmt <- ptrr::format_date_human()
