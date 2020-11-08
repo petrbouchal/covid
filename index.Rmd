@@ -444,12 +444,8 @@ today_fmt <- ptrr::format_date_human()
 ```
 
 ```{r time-adjusting}
-# vek <- czso::czso_get_table("130142")
-# write_csv(vek, "vek.csv")
 vek <- read_csv("vek.csv")
 
-# vek_ciselnik <- czso::czso_get_codelist("cis7700")
-# write_csv(vek_ciselnik, "vek_ciselnik.csv")
 vek_ciselnik <- read_csv("vek_ciselnik.csv")
 
 vek_prevodnik <- read_csv("vek-prevodnik.csv")
