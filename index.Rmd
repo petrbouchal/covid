@@ -428,7 +428,7 @@ make_plot_base(umrti_heatmap_dt) +
 ```
 
 
-## Mortality statistics {.tabset .tabset-pills}
+## Mortality: all-cause {.tabset .tabset-pills}
 
 ```{r mort-data}
 zmr0 <- czso_get_table("130185", force_redownload = T)
@@ -562,6 +562,13 @@ zemr_plot_base +
 zemr_plot_base +
   facet_wrap(~vek_txt, scales = "free_y")
 ```
+
+## Mortality: Covid vs. rest
+
+```{r}
+
+```
+
 
 ## Data & disclaimer
 
