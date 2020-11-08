@@ -493,10 +493,10 @@ zmr_bands <- zmr_normd %>%
 
 ```{r}
 lbs_grey <- tribble(~vek_txt, ~day_sameyear_floored, ~min, ~txt,
-               factor("celkem"), as.Date("1970-05-01"), 12.1, "rozpětí\n2011-19",
+               factor("celkem"), as.Date("1970-05-10"), 12.1, "rozpětí\n2011-19",
                )
 lbs_blue <- tribble(~vek_txt, ~day_sameyear_floored, ~min, ~txt,
-               factor("celkem"), as.Date("1970-02-15"), 11.5, "2020"
+               factor("celkem"), as.Date("1970-02-15"), 11.7, "2020"
                )
 ```
 
@@ -508,26 +508,27 @@ ggplot(data = zmr_bands, mapping = aes(group = vek_txt)) +
               aes(x = day_sameyear_floored, ymin = min, ymax = max)) +
   geom_line(data = zmr_bands %>% filter(is2020),
             colour = "darkblue",
+            size = 1,
             aes(x = day_sameyear_floored, y = min)) +
   geom_point(data = zmr_bands %>% filter(is2020),
             aes(x = day_sameyear_floored, y = min), 
-            size = 1, colour = "darkblue", fill = "white", shape = 21) +
+            size = .6, colour = "darkblue", fill = "white", shape = 21) +
   facet_wrap(~vek_txt, scales = "free_y") +
   scale_x_date(date_breaks = "3 months",
                date_labels = "%b", breaks = c(1,3,6, 9, 12)) +
   theme_ptrr("y", multiplot = T) +
   labs(x = "Týden v roce",
-       subtitle = str_glue("Poslední data k {last_date_fmt}. Modrá = 2020, šedá = rozpětí let 2011-2019"),
+       subtitle = str_glue("Údaje do {last_date_fmt}. Modrá = 2020, šedá = rozpětí let 2011-2019"),
        title = "Zemřelí na 100 000 obyv. podle týdnů v roce, 2011-2020",
        caption = str_glue("Výpočet dle dat ČSÚ, sada 130185 (úmrtí) a 130142 (věk) | @petrbouchal {today_fmt}")) +
   geom_text(data = lbs_grey, aes(x = day_sameyear_floored, 
                             y = min, label = txt), 
             fontface = "bold",
-            colour = "grey40",size = 2) +
+            colour = "grey40",size = 2.5) +
   geom_text(data = lbs_blue, aes(x = day_sameyear_floored, 
                             y = min, label = txt), 
             fontface = "bold",
-            colour = "darkblue", size = 2)
+            colour = "darkblue", size = 2.5)
 ```
 
 
@@ -541,7 +542,7 @@ zemr_plot_base <- zmr %>%
   scale_colour_viridis_d(direction = -1, name = "rok") +
   ptrr::theme_ptrr("both", multiplot = T, axis.title.x = element_text()) +
   labs(x = "Týden v roce",
-       subtitle = str_glue("Poslední data k {last_date_fmt}, staženo {today_fmt}"),
+       subtitle = str_glue("Údaje do {last_date_fmt}, staženo {today_fmt}"),
        title = "Počty zemřelých podle týdnů v roce, 2011-2020",
        caption = "Data: ČSÚ, sada 130185 | @petrbouchal") +
   scale_x_date(date_breaks = "3 months", date_labels = "%b", breaks = c(1,3,6, 9, 12)) +
