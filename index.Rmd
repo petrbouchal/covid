@@ -49,9 +49,9 @@ meta() %>%
   meta_name("github-repo" = "petrbouchal/covid") %>% 
   meta_viewport() %>% 
   meta_social(
-    title = "Czech Track",
-    url = "https://petrbouchal.github.io/covid/",
-    image = "https://petrbouchal.github.io/covid/twitter_card_large.png",
+    title = "Covid-19: data for Czech Republic",
+    url = "https://petrbouchal.xyz/covid/",
+    image = "https://petrbouchal.xyz/covid/twitter_card_large.png",
     image_alt = "Náhled grafu nárůstu případů podle okresů",
     og_type = "website",
     og_author = c("Petr Bouchal"),
