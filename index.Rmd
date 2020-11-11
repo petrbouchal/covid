@@ -518,12 +518,6 @@ ggplot(zmr_normd_with_sum, aes(x = roktyden, colour = vek_txt, group = vek_txt))
 zmr_compare <- zmr_normd_with_sum %>% 
   mutate(is2020 = rok == 2020,
          day_sameyear_floored = floor_date(day_sameyear, "weeks"))
-
-zmr_ribbon_data <- zmr_compare %>% 
-  group_by(is2020, vek_txt, tyden, day_sameyear_floored) %>% 
-  summarise(min = min(normd, na.rm = T), 
-            max = max(normd, na.rm = T), .groups = "drop") %>% 
-  mutate(vek_txt = fct_relevel(vek_txt, "celkem"))
 ```
 
 
