@@ -415,6 +415,13 @@ umrti_heatmap_dt <- umrti_grid %>%
   mutate(weekly_total = sum(pocet, na.rm = T)) %>% 
   group_by(week_starting) %>%
   mutate(podil = pocet/weekly_total)
+
+umrti_all_tydny_floored <- umrti_base %>% 
+  mutate(day_sameyear = make_date(1970, month = month(datum),
+                                  day = day(datum)),
+         day_sameyear_floored = floor_date(day_sameyear, "week")) %>% 
+  group_by(day_sameyear_floored) %>% 
+  summarise(umrti_covid = n())
 ```
 
 
@@ -616,7 +623,98 @@ zemr_plot_base +
   facet_wrap(~vek_txt, scales = "free_y")
 ```
 
-## Mortality: Covid v. rest
+## Mortality: Covid v. rest {.tabset .tabset-pills}
+
+### Covid and excess deaths
+
+```{r excess-data, include=T}
+excess_data <- umrti_all_tydny_floored %>%
+  left_join(zmr_lastyrs %>% 
+              filter(vek_txt == "celkem")) %>% 
+  select(day_sameyear_floored, umrti_covid, mean_dead_normd, is2020) %>% 
+  spread(is2020, mean_dead_normd) %>% 
+  rename(umrti_mean_lastyrs = `FALSE`, umrti_abs2020 = `TRUE`) %>% 
+  mutate(umrti_abs2020_noncovid = umrti_abs2020 - umrti_covid,
+         umrti_expected = umrti_mean_lastyrs,
+         umrti_excess = umrti_abs2020 - umrti_mean_lastyrs - umrti_covid) 
+
+excess_data_long <- excess_data %>% 
+  pivot_longer(c(umrti_covid, umrti_expected,
+                 umrti_excess)) %>% 
+  mutate(name = fct_relevel(name, 
+                            "umrti_excess", 
+                            "umrti_covid",
+                            "umrti_expected"))
+```
+
+```{r excess-plot}
+excess_data %>% 
+  mutate(excess_spodni = if_else(umrti_mean_lastyrs > umrti_abs2020, 
+                                 NA_real_, 
+                                 umrti_mean_lastyrs),
+         excess_horni = if_else(umrti_mean_lastyrs > umrti_abs2020, 
+                                NA_real_, 
+                                umrti_abs2020 - umrti_covid)) %>% 
+  ggplot(aes(x = day_sameyear_floored)) +
+  geom_line(aes(y = umrti_mean_lastyrs, colour = "průměr 2016-19"), size = .5) +
+  geom_line(aes(y = umrti_abs2020, colour = "2020"), size = .5) +
+  scale_colour_manual(values = c(`průměr 2016-19` = "grey",
+                                 `2020` = "blue",
+                                 `Nárůst navíc` = "pink", 
+                                 `Covid-19` = "lightblue"),
+                      name = "Počet zemřelých za týden") +
+  geom_ribbon(aes(ymin = umrti_abs2020 - umrti_covid,
+                  ymax = umrti_abs2020,
+                  fill = "Covid-19")) +
+  geom_ribbon(aes(ymin = excess_spodni,
+                  ymax = excess_horni,
+                  fill = "Nárůst navíc")) +
+  scale_fill_manual(values = c(`Nárůst navíc` = "pink", 
+                               `Covid-19` = "lightblue"),
+                    name = "Příčiny rozdílu") +
+  scale_y_continuous(limits = c(0, NA)) +
+  theme_ptrr("both") +
+  scale_x_date(date_breaks = "month", date_labels = "%d %b") +
+  guides(colour = guide_legend(order = 1),
+         fill = guide_legend(order = 2)) +
+  labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
+       subtitle = "Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\nPočty úmrtí 2017-19 přepočteny na věkovou strukturu roku 2019.",
+       caption = "@petrbouchal z dat ČSÚ (týdenní počty úmrtí) a MZd (úmrtí na Covid)")
+
+
+```
+
+#### Alternative view, incl. recent Covid-19 deaths
+
+```{r, eval = T}
+
+date_last_stats <- max(zmr$day_sameyear[zmr$rok == 2020])
+
+ggplot(excess_data_long %>% 
+         mutate(alpha = if_else(day_sameyear_floored > date_last_stats, "no", "yes")),
+       aes(day_sameyear_floored)) +
+  geom_col(aes(y = value, fill = name, alpha = alpha)) +
+  # geom_line(aes(y = umrti_mean3yr)) +
+  scale_fill_manual(values = c(umrti_excess = "darkred",
+                               umrti_covid = "darkblue",
+                               umrti_expected = "grey"),
+                    labels = c("Nárůst navíc",
+                               "Covid-19",
+                               "Úroveň let 2017-19"), name = NULL) +
+  scale_alpha_discrete(range = c(0.7, 1), guide = "none") +
+  theme_ptrr("both") +
+  scale_x_date(date_breaks = "month", date_labels = "%d %b") +
+  labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
+       subtitle = "Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\nPočty úmrtí 2017-19 přepočteny na věkovou strukturu roku 2019. Data o celkové úmrtnosti mají zpoždění.",
+       caption = "@petrbouchal z dat ČSÚ (týdenní počty úmrtí) a MZd (úmrtí na Covid)") +
+  theme(legend.position = c(.13, .85), legend.key.size = unit(.5, "cm"))
+```
+
+### Excess deaths by age
+
+### Excess deaths by region
+
+### Causes
 
 ```{r}
 
