@@ -447,6 +447,13 @@
       "Repository": "CRAN",
       "Hash": "4ded8b439797f7b1693bd3d238d0106b"
     },
+    "ggrepel": {
+      "Package": "ggrepel",
+      "Version": "0.8.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c013a50b19695daf04853679e1bc105a"
+    },
     "ggtext": {
       "Package": "ggtext",
       "Version": "0.1.0.9000",
@@ -854,15 +861,15 @@
     },
     "ptrr": {
       "Package": "ptrr",
-      "Version": "0.1.0.9000",
+      "Version": "0.2.0.9000",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "petrbouchal",
       "RemoteRepo": "ptrr",
       "RemoteRef": "master",
-      "RemoteSha": "72340b95c99f4508d8f31d2cb815f43780c6ac2a",
-      "Hash": "02363ef39b8f802f2bbe086c00302735"
+      "RemoteSha": "fa2ff483dd737fdb1fc30d5e7048c6d9c922bebb",
+      "Hash": "3141a5e161ffffc4304363bc6fab3776"
     },
     "purrr": {
       "Package": "purrr",
@@ -992,15 +999,15 @@
     },
     "rmarkdown": {
       "Package": "rmarkdown",
-      "Version": "2.1.3",
+      "Version": "2.4.6",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "rmarkdown",
       "RemoteUsername": "rstudio",
       "RemoteRef": "master",
-      "RemoteSha": "d7e1bdab6f851bd92f17b431d612e21ce297a255",
-      "Hash": "449bd94fd81c73e529b1550db7152c5a"
+      "RemoteSha": "26fe392ee7d416a365d627c62827d04a6e5d4d0b",
+      "Hash": "870db08b3f414f32dd4144b5ba4f17e8"
     },
     "roxygen2": {
       "Package": "roxygen2",
@@ -1256,10 +1263,10 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.14",
+      "Version": "0.18",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "60e146e3aba37a547e12306dc3da77a6"
+      "Hash": "d1c0b777b432e4b4c039c8aaecc54e0f"
     },
     "xml2": {
       "Package": "xml2",
