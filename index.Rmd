@@ -35,8 +35,8 @@ update_geom_defaults("rect", list(fill = "blue"))
 ```
 
 ```{r fonts}
-sysfonts::font_add_google("IBM Plex Sans", "Roboto")
-sysfonts::font_add_google("IBM Plex Sans Condensed", "Roboto Condensed")
+sysfonts::font_add_google("IBM Plex Sans")
+sysfonts::font_add_google("IBM Plex Sans Condensed")
 ```
 
 ```{r metathis}
@@ -546,10 +546,10 @@ zmr_ribbon_data <- zmr_normd_with_sum %>%
 
 ```{r annotations}
 lbls_grey <- tribble(~vek_txt, ~day_sameyear_floored, ~min, ~txt,
-               factor("celkem"), as.Date("1970-05-10"), 12.1, "rozpětí\n2011-19",
+               factor("celkem"), as.Date("1970-02-15"), 2750, "rozpětí\n2011-19",
                )
 lbls_blue <- tribble(~vek_txt, ~day_sameyear_floored, ~min, ~txt,
-               factor("celkem"), as.Date("1970-02-15"), 11.7, "2020"
+               factor("celkem"), as.Date("1970-04-25"), 1900, "2020"
                )
 ```
 
@@ -577,12 +577,14 @@ ggplot(data = zmr_ribbon_data, mapping = aes(group = vek_txt)) +
        caption = str_glue("Výpočet dle dat ČSÚ, sada 130185 (úmrtí) a 130142 (věk) | @petrbouchal {today_fmt}")) +
   geom_text(data = lbls_grey, aes(x = day_sameyear_floored, 
                             y = min, label = txt), 
+            family = "Roboto Condensed",
             fontface = "bold",
-            colour = "grey40",size = 2.5) +
+            colour = "#454545",size = 2) +
   geom_text(data = lbls_blue, aes(x = day_sameyear_floored, 
                             y = min, label = txt), 
+            family = "Roboto Condensed",
             fontface = "bold",
-            colour = "darkblue", size = 2.5)
+            colour = "darkblue", size = 2)
 ```
 
 
@@ -639,10 +641,17 @@ excess_data_long <- excess_data %>%
                             "umrti_excess", 
                             "umrti_covid",
                             "umrti_expected"))
+
+excess_data_daily <- excess_data %>% 
+  complete(day_sameyear_floored = full_seq(day_sameyear_floored, period = 1)) %>% 
+  mutate(across(starts_with("umrti"), forecast::na.interp)) %>% 
+  mutate(umrti_abs2020 = if_else(day_sameyear_floored > max(zmr$day_sameyear[zmr$rok==2020]),
+                                NA_real_, umrti_abs2020))
 ```
 
+
 ```{r excess-plot}
-excess_data %>% 
+excess_data_daily %>% 
   mutate(excess_spodni = if_else(umrti_mean_lastyrs > umrti_abs2020, 
                                  NA_real_, 
                                  umrti_mean_lastyrs),
@@ -650,9 +659,9 @@ excess_data %>%
                                 NA_real_, 
                                 umrti_abs2020 - umrti_covid)) %>% 
   ggplot(aes(x = day_sameyear_floored)) +
-  geom_line(aes(y = umrti_mean_lastyrs, colour = "průměr 2016-19"), size = .5) +
+  geom_line(aes(y = umrti_mean_lastyrs, colour = "průměr 2017-19"), size = .5) +
   geom_line(aes(y = umrti_abs2020, colour = "2020"), size = .5) +
-  scale_colour_manual(values = c(`průměr 2016-19` = "grey",
+  scale_colour_manual(values = c(`průměr 2017-19` = "grey",
                                  `2020` = "blue",
                                  `Nárůst navíc` = "pink", 
                                  `Covid-19` = "lightblue"),
