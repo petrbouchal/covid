@@ -910,8 +910,8 @@
       "RemoteUsername": "petrbouchal",
       "RemoteRepo": "ptrr",
       "RemoteRef": "master",
-      "RemoteSha": "60575cd2d103977b81322a6372f7c157a74df639",
-      "Hash": "aa4410996aeaa811eb3fbe5f9495fee3"
+      "RemoteSha": "e2cd67a6183a5c64381bb0bb429f6b965024975a",
+      "Hash": "6c1a35daaabca45a17c1ea5990095412"
     },
     "purrr": {
       "Package": "purrr",
