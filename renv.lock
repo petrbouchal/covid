@@ -1055,15 +1055,15 @@
     },
     "rmarkdown": {
       "Package": "rmarkdown",
-      "Version": "2.4.6",
+      "Version": "2.5.3",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "rmarkdown",
       "RemoteUsername": "rstudio",
+      "RemoteRepo": "rmarkdown",
       "RemoteRef": "master",
-      "RemoteSha": "26fe392ee7d416a365d627c62827d04a6e5d4d0b",
-      "Hash": "870db08b3f414f32dd4144b5ba4f17e8"
+      "RemoteSha": "bb7d9525a6939d98d344268801ab1eccbd583a41",
+      "Hash": "479279b5a99610deaa37105f4b4ed299"
     },
     "roxygen2": {
       "Package": "roxygen2",
