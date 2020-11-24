@@ -714,6 +714,8 @@ TO DO
 
 ## Mobility
 
+TO DO
+
 ## Data & disclaimer
 
 This repository contains code that generates a dashboard using open data on Covid-19 cases and deaths in the Czech Republic, and on all-cause mortality to understand excess deaths.
