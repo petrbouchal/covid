@@ -571,8 +571,10 @@ ggplot(data = zmr_ribbon_data, mapping = aes(group = vek_txt)) +
             family = "Roboto Condensed",
             fontface = "bold",
             colour = "darkblue", size = 2)
-```
 
+# ggsave("weekly-deaths-twitter.png", device = ragg::agg_png, width = 6, height = 6*9/16, 
+#        res = 300, scale = 1.3)
+```
 
 ```{r mort-base}
 zemr_plot_base <- zmr %>% 
