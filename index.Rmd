@@ -728,7 +728,7 @@ The mortality data comes from the Czech Statistical Office: https://www.czso.cz/
 
 The data visualisations should be taken with a grain of salt. The data is incomplete and imperfect: it can undergo backward revisions, fresh data sometimes contains errors, and there are issues inherent in how the data is collected and reported (starting from test errors, to reporting errors, to time inconsistencies etc.)
 
-Specifically, daily figures, where reported, are subject to change and significant variation and these should be intepreted with caution. 
+Specifically, daily figures, where reported, are subject to change and significant variation and these should be intepreted with cautin.
 
 # 
 
