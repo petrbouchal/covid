@@ -793,7 +793,7 @@ xdage <- umrti_vek_tydny_floored %>%
             )
 ```
 
-```{r index-10}
+```{r index-10, eval=F}
 xdage %>% 
   filter(!is2020) %>% 
   ggplot(aes(day_sameyear_floored)) +
