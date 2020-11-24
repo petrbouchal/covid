@@ -702,6 +702,44 @@ ggplot(excess_data_long %>%
 ### Excess deaths by age
 
 TO DO
+
+```{r index-8}
+umrti_vek_tydny_floored <- umrti %>% 
+  mutate(vek_grp = cut(vek, c(0, 15, 39, 64, 84, Inf), 
+                       right = TRUE,
+                       labels = c("0-14",
+                                  "15-39",
+                                  "40-64",
+                                  "65-84",
+                                  "85 a více"),
+                       ordered_result = T) %>% 
+           fct_expand("celkem")
+           # fct_relabel(str_remove_all, "\\(|\\)|\\]|\\[") %>% 
+           # fct_relabel(str_replace, "\\,", " - ") %>% 
+           # fct_relabel(str_replace, " - Inf", " a více")
+         ) %>% 
+  group_by(day_sameyear_floored, vek_grp) %>% 
+  summarise(umrti_covid = n())
+```
+
+```{r index-9}
+xdage <- umrti_vek_tydny_floored %>% 
+  rename(vek_txt = vek_grp) %>% 
+  # mutate(vek_txt = as.character(vek_txt)) %>% 
+  left_join(zmr_lastyrs %>% 
+              ungroup() %>% 
+              mutate(vek_txt = ordered(vek_txt))
+            )
+```
+
+```{r index-10}
+xdage %>% 
+  filter(!is2020) %>% 
+  ggplot(aes(day_sameyear_floored)) +
+  geom_line(aes(y = umrti_covid/mean_dead_normd)) +
+  facet_wrap(~ vek_txt)
+```
+
 ### Excess deaths by region
 
 ### Causes
