@@ -642,7 +642,7 @@ excess_data_daily <- excess_data %>%
 date_last_stats <- max(zmr$day_sameyear[zmr$rok == 2020])
 
 ggplot(excess_data_long %>% 
-         mutate(alpha = if_else(day_sameyear_floored > date_last_stats, "ne", "ano")) %>% 
+         mutate(alpha = if_else(day_sameyear_floored > date_last_stats, "nedostupná", "dostupná")) %>% 
          filter(name != "umrti_expected"),
        aes(day_sameyear_floored)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
@@ -653,7 +653,7 @@ ggplot(excess_data_long %>%
                     labels = c("Ostatní",
                                "Covid-19"), name = "Příčiny rozdílů oproti 2017-19") +
   scale_alpha_discrete(range = c(1, .7), guide = "legend",
-                       name = "Data o všech úmrtích dostupná") +
+                       name = "Data o všech úmrtích za 2020") +
   theme_ptrr("both",
              legend.box = "horizontal",
              legend.position = c(.33, .85), legend.key.size = unit(.5, "cm")) +
