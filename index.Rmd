@@ -60,9 +60,9 @@ meta() %>%
   )
 ```
 
-# {.tabset}
+#  {.tabset}
 
-## Cases: district {.tabset .tabset-pills} 
+## Cases: district {.tabset .tabset-pills}
 
 ```{r case-data-load}
 cisokr <- czso_get_codelist(109) %>% 
@@ -87,7 +87,6 @@ umrti <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/umrti.csv
 epis <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-okres-nakazeni-vyleceni-umrti.csv")
 ```
 
-
 ```{r okresy-geo-load}
 okresy_p <- read_rds("okresy_polygons.rds")
 ```
@@ -105,7 +104,6 @@ obyv_okresy <- czso_get_table("130141r20") %>%
   rows_insert(obyv_praha) %>% 
   rename(pocobyv = hodnota)
 ```
-
 
 ```{r model, eval=F}
 lm_okres <- function(df) {
@@ -213,8 +211,6 @@ girafe(code = print(okresy_percap_plot / okresy_abs_plot),
 
 ### Growth by district since `r last_week_fmt`
 
-
-
 ```{r narust-plot}
 nhs_narust %>% 
   filter(max(pocet, na.rm = T) > 0) %>%
@@ -229,7 +225,6 @@ nhs_narust %>%
   theme(axis.text.x = element_text(hjust = 0))
 ```
 
-
 ```{r narust-tab, eval=F}
 nhs_bd %>% 
   filter(datum > "2020-07-13") %>%
@@ -241,7 +236,6 @@ nhs_bd %>%
            fct_relevel("Ostatní", after = Inf)) %>% 
   arrange(okr_grp)
 ```
-
 
 ```{r map-days-since, eval=F}
 ### Days since last case in each district
@@ -268,7 +262,7 @@ girafe(ggobj = lastpos_g, fonts = list(sans = "IBM Plex Sans"),
                       opts_hover(css = "stroke: white")))
 ```
 
-## Cases: age {.tabset .tabset-pills} 
+## Cases: age {.tabset .tabset-pills}
 
 ```{r age-grid}
 cases_base <- nhs_bd %>% 
@@ -283,7 +277,7 @@ cases_grid <- cases_base %>%
   expand(kraj, datum = full_seq(datum, 1), vek)
 ```
 
-```{r}
+```{r index-1}
 make_plot_base <- function(data) {ggplot(data) + 
   guides(fill = guide_colorbar(title.position = "left", barwidth = unit(5, "cm"), 
                                draw.ulim = T, 
@@ -300,7 +294,6 @@ make_plot_base <- function(data) {ggplot(data) +
   scale_x_date(date_breaks = "week", labels = label_date_short(),
                expand = expansion(0, 0))}
 ```
-
 
 ```{r age-heatmap-base}
 heatmap_basedt <- cases_grid %>% 
@@ -393,7 +386,7 @@ make_plot_base(heatmap_basedt_kraje) +
 
 ## Deaths: age
 
-```{r}
+```{r index-2}
 umrti_base <- umrti %>% 
   mutate(vek = cut_width(vek, width = 10, boundary = 0, ordered_result = T) %>% 
            fct_relabel(str_remove_all, "\\(|\\)|\\]|\\[") %>% 
@@ -424,8 +417,7 @@ umrti_all_tydny_floored <- umrti_base %>%
   summarise(umrti_covid = n())
 ```
 
-
-```{r}
+```{r index-3}
 make_plot_base(umrti_heatmap_dt) +
   scale_fill_viridis_c(option = "B", labels = label_number_cz(1),
                        name = "Počet úmrtí v daném týdnu") + 
@@ -434,7 +426,6 @@ make_plot_base(umrti_heatmap_dt) +
        subtitle = "Průměrný denní počet úmrtní v daném týdnu",
        x = "Týden začínající...")
 ```
-
 
 ## Mortality: all-cause {.tabset .tabset-pills}
 
@@ -456,7 +447,6 @@ vek <- read_rds("vek.rds")
 vek_ciselnik <- read_rds("vek_ciselnik.rds")
 vek_prevodnik <- read_csv("vek-prevodnik.csv")
 ```
-
 
 ```{r time-adjusting-agedata}
 vek_slct <- vek %>%  
@@ -485,7 +475,6 @@ vek_do2020 <- vek_slct %>%
               mutate(rok = 2020))
 ```
 
-
 ```{r time-adjusting-normalise}
 zmr_normd <- zmr %>% 
   filter(vek_txt != "celkem") %>% 
@@ -505,21 +494,18 @@ zmr_normd_with_sum <- zmr_normd %>%
   mutate(day_sameyear = make_date(1970, month(casref_do), day(casref_do)))
 ```
 
-
-```{r, eval = F}
+```{r index-4, eval = F}
 ggplot(zmr_normd_with_sum, aes(x = roktyden, colour = vek_txt, group = vek_txt)) +
   geom_line(aes(y = hodnota), size = .3) +
   geom_line(aes(y = normd), linetype = "dashed", size = .3) +
   facet_grid(vek_txt ~ ., scales = "free_y")
 ```
 
-
 ```{r time-adjusting-prep}
 zmr_compare <- zmr_normd_with_sum %>% 
   mutate(is2020 = rok == 2020,
          day_sameyear_floored = floor_date(day_sameyear, "weeks"))
 ```
-
 
 ```{r time-adjusting-means}
 zmr_lastyrs <- zmr_compare %>% 
@@ -530,7 +516,6 @@ zmr_lastyrs <- zmr_compare %>%
             mean_pop = mean(pocet_obyv, na.rm = T)) %>% 
   mutate(vek_txt = fct_relevel(vek_txt, "celkem"))
 ```
-
 
 ```{r time-adjusting-ribbondata}
 zmr_ribbon_data <- zmr_normd_with_sum %>% 
@@ -689,7 +674,7 @@ excess_data_daily %>%
 
 #### Alternative view, incl. recent Covid-19 deaths
 
-```{r, eval = T}
+```{r index-5, eval = T}
 
 date_last_stats <- max(zmr$day_sameyear[zmr$rok == 2020])
 
@@ -715,11 +700,14 @@ ggplot(excess_data_long %>%
 
 ### Excess deaths by age
 
+TO DO
 ### Excess deaths by region
 
 ### Causes
 
-```{r}
+TO DO
+
+```{r index-11}
 
 ```
 
