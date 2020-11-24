@@ -645,11 +645,9 @@ excess_data_daily %>%
                                 NA_real_, 
                                 umrti_abs2020 - umrti_covid)) %>% 
   ggplot(aes(x = day_sameyear_floored)) +
-  geom_line(aes(y = umrti_mean_lastyrs, colour = "průměr 2017-19"), size = .5) +
-  geom_line(aes(y = umrti_abs2020, colour = "2020"), size = .5) +
   scale_colour_manual(values = c(`průměr 2017-19` = "grey",
                                  `2020` = "blue",
-                                 `Nárůst navíc` = "pink", 
+                                 `Ostatní` = "pink", 
                                  `Covid-19` = "lightblue"),
                       name = "Počet zemřelých za týden") +
   geom_ribbon(aes(ymin = umrti_abs2020 - umrti_covid,
@@ -657,8 +655,10 @@ excess_data_daily %>%
                   fill = "Covid-19")) +
   geom_ribbon(aes(ymin = excess_spodni,
                   ymax = excess_horni,
-                  fill = "Nárůst navíc")) +
-  scale_fill_manual(values = c(`Nárůst navíc` = "pink", 
+                  fill = "Ostatní")) +
+  geom_line(aes(y = umrti_mean_lastyrs, colour = "průměr 2017-19"), size = .5) +
+  geom_line(aes(y = umrti_abs2020, colour = "2020"), size = .5) +
+  scale_fill_manual(values = c(`Ostatní` = "pink", 
                                `Covid-19` = "lightblue"),
                     name = "Příčiny rozdílu") +
   scale_y_continuous(limits = c(0, NA)) +
@@ -687,7 +687,7 @@ ggplot(excess_data_long %>%
   scale_fill_manual(values = c(umrti_excess = "darkred",
                                umrti_covid = "darkblue",
                                umrti_expected = "grey"),
-                    labels = c("Nárůst navíc",
+                    labels = c("Ostatní",
                                "Covid-19",
                                "Úroveň let 2017-19"), name = NULL) +
   scale_alpha_discrete(range = c(0.7, 1), guide = "none") +
