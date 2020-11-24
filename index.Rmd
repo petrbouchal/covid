@@ -533,7 +533,7 @@ zmr_ribbon_data <- zmr_normd_with_sum %>%
 
 ```{r annotations}
 lbls_grey <- tribble(~vek_txt, ~day_sameyear_floored, ~min, ~txt,
-               factor("celkem"), as.Date("1970-02-15"), 2750, "rozpětí\n2011-19",
+               factor("celkem"), as.Date("1970-02-15"), 2600, "rozpětí\n2011-19",
                )
 lbls_blue <- tribble(~vek_txt, ~day_sameyear_floored, ~min, ~txt,
                factor("celkem"), as.Date("1970-04-25"), 1900, "2020"
