@@ -400,9 +400,11 @@ umrti_grid <- umrti_base %>%
 umrti_heatmap_dt <- umrti_grid %>% 
   left_join(umrti_base) %>% 
   mutate(week = isoweek(datum),
-         week_starting = as.Date(paste(2020, week, 1, sep="-"), "%Y-%U-%u") - days(6)) %>% 
+         week_starting = as.Date(paste(2020, week, 1, sep="-"), 
+                                 "%Y-%U-%u") - days(6)) %>% 
   group_by(week_starting, vek) %>%
-  summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum), .groups = "drop") %>% 
+  summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum), 
+            .groups = "drop") %>% 
   replace_na(replace = list(pocet = 0)) %>% 
   group_by(week_starting) %>%
   mutate(weekly_total = sum(pocet, na.rm = T)) %>% 
@@ -537,7 +539,6 @@ lbls_blue <- tribble(~vek_txt, ~day_sameyear_floored, ~min, ~txt,
                factor("celkem"), as.Date("1970-04-25"), 1900, "2020"
                )
 ```
-
 
 ```{r age-adjusted-plot, fig.asp=0.6}
 ggplot(data = zmr_ribbon_data, mapping = aes(group = vek_txt)) +
