@@ -425,7 +425,7 @@ make_plot_base(umrti_heatmap_dt) +
                        name = "Počet úmrtí v daném týdnu") + 
   geom_tile(aes(week_starting, vek, fill = pocet)) +
   labs(title = "Úmrtí podle věku",
-       subtitle = "Průměrný denní počet úmrtní v daném týdnu",
+       subtitle = "Průměrný denní počet úmrtí v daném týdnu",
        x = "Týden začínající...")
 ```
 
