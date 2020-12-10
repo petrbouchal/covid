@@ -226,7 +226,8 @@ nhs_narust %>%
   scale_x_date(labels = label_date_short(format = c(NA, "%b", "%d", "%h")), 
                breaks = breaks_width("2 days")) +
   ptrr::theme_ptrr("y", multiplot = T) +
-  theme(axis.text.x = element_text(hjust = 0))
+  theme(axis.text.x = element_text(hjust = 0)) +
+  labs(title = "Nárůst za posledních 7 dní")
 ```
 
 ```{r narust-tab, eval=F}
