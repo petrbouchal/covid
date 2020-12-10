@@ -28,6 +28,9 @@ library(pragr)
 library(ggiraph)
 library(rmapshaper)
 library(ggrepel)
+library(tsibble)
+library(fabletools)
+library(feasts)
 
 Sys.setlocale("LC_TIME", "cs_CZ.UTF-8")
 
