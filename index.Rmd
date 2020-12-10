@@ -874,11 +874,30 @@ TO DO
 
 ```
 
-## Mobility
+## Mobility {.tabset .tabset-pills}
 
 ```{r, include=F}
 source("google_load-transform.R")
 ```
+
+### By venue
+
+```{r mob-venue, include=T}
+gd_dlouhe %>% 
+  filter(kraj_nazev == "Celá ČR",
+         date > "2020-09-01") %>% 
+  ggplot(aes(date, zmena)) +
+  geom_line(size = .5, colour = "grey") +
+  geom_smooth(aes(colour = kategorie_cz), size = .5, show.legend = F) +
+  facet_wrap(~ kategorie_cz) +
+  theme_ptrr("both", multiplot = T) +
+  labs(title = "Mobilita podle typu místa",
+       subtitle = str_glue("100 = před-Covid průměr pro daný den v týdnu\n",
+                           "šedá čára = data, barevná = Loess vyhlazení"),
+       caption = "@petrbouchal z dat Google mobility")
+
+```
+
 
 ### Weekends
 
@@ -934,6 +953,8 @@ The goal is to provide some of the comparisons that official sources (e.g. the C
 The Covid-19 data comes from UZIS, the Czech health data authority, via data published by the Czech Ministstry of Health at <https://onemocneni-aktualne.mzcr.cz/covid-19>.
 
 The mortality data comes from the Czech Statistical Office: <https://www.czso.cz/csu/czso/obypz_cr>. It is reported with a delay of several weeks owing to the manual process of recording and reporting deaths in population registers.
+
+The mobility data come from Google at <https://www.google.com/covid19/mobility/>; documentation [in Czech](https://support.google.com/covid19-mobility/answer/9825414?hl=cs&ref_topic=9822927) and [in English](https://support.google.com/covid19-mobility/answer/9825414?hl=en&ref_topic=9822927); see also the [Google daily report for CZ](https://www.gstatic.com/covid19/mobility/2020-12-06_CZ_Mobility_Report_cs.pdf) which contains a brief intro to the data in the back.
 
 ### Important
 
