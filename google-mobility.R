@@ -11,4 +11,4 @@ gd_dlouhe %>%
   labs(title = "Mobilita podle typu místa",
        subtitle = str_glue("100 = před-Covid průměr pro daný den v týdnu\n",
                            "šedá čára = data, barevná = Loess vyhlazení"),
-       caption = "@ petrbouchal z dat Google mobility")
+       caption = "@petrbouchal z dat Google mobility")
