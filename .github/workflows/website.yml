@@ -29,12 +29,13 @@ jobs:
         with:
           pandoc-version: '2.7.3' # The pandoc version to download (if necessary) and use.
 
-      - name: Cache R packages
+      - name: Cache packages
         uses: actions/cache@v1
         with:
-          path: ${{ env.R_LIBS_USER }}
-          key: macOS-r-4.0-2-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: macOS-r-4.0-2-
+          path: ${{ env.RENV_PATHS_ROOT }}
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-renv-
 
       - name: Install packages
         env: 
