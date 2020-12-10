@@ -17,7 +17,7 @@ library(stringr)
 library(dplyr)
 library(ggplot2)
 library(czso)
-library(CzechData)
+library(CzechData) 
 library(lubridate)
 library(ragg)
 library(ptrr)
@@ -63,7 +63,7 @@ meta() %>%
 
 #  {.tabset}
 
-## Cases: district {.tabset .tabset-pills}
+## Cases  {.tabset .tabset-pills}
 
 ```{r case-data-load}
 cisokr <- czso_get_codelist(109) %>% 
@@ -162,7 +162,7 @@ lastwk <- nhs_bd %>%
   summarise(pocet = n(), pocobyv = mean(pocobyv), pocet_perk = pocet/pocobyv*100000)
 ```
 
-### Cases last 7 days
+### Districts: 7 days
 
 ```{r map-cases}
 library(patchwork)
@@ -213,7 +213,7 @@ girafe(code = print(okresy_percap_plot / okresy_abs_plot),
                       opts_hover(css = "stroke: white")))
 ```
 
-### Growth by district since `r last_week_fmt`
+### District: growth
 
 ```{r narust-plot}
 nhs_narust %>% 
@@ -265,8 +265,6 @@ girafe(ggobj = lastpos_g, fonts = list(sans = "IBM Plex Sans"),
                       opts_tooltip(css = "font-family: IBM Plex Sans; color:white; background-color: black; padding:6px;border-radius:5px;"),
                       opts_hover(css = "stroke: white")))
 ```
-
-## Cases: age {.tabset .tabset-pills}
 
 ```{r age-grid}
 cases_base <- nhs_bd %>% 
@@ -330,7 +328,7 @@ heatmap_basedt_cr <- heatmap_basedt %>%
   mutate(podil = pocet/all_ages)
 ```
 
-### National
+### Weekdays
 
 ```{r age-heatmap-cr-count}
 make_plot_base(heatmap_basedt_cr) +
@@ -342,7 +340,7 @@ make_plot_base(heatmap_basedt_cr) +
        subtitle = "Průměrný denní počet nových případů v daném týdnu")
 ```
 
-### National (%)
+### Age (%)
 
 ```{r age-heatmap-cr-share}
 make_plot_base(heatmap_basedt_cr) +
@@ -355,7 +353,7 @@ make_plot_base(heatmap_basedt_cr) +
        x = "Týden začínající...", y = NULL)
 ```
 
-### By region
+### Age by region
 
 ```{r age-heatmap-kraje-count}
 make_plot_base(heatmap_basedt_kraje) +
@@ -371,7 +369,7 @@ make_plot_base(heatmap_basedt_kraje) +
        x = "Týden začínající...")
 ```
 
-### By region (%)
+### Age by region (%)
 
 ```{r age-heatmap-kraje-share}
 make_plot_base(heatmap_basedt_kraje) +
@@ -388,7 +386,9 @@ make_plot_base(heatmap_basedt_kraje) +
        x = "Týden začínající...")
 ```
 
-## Deaths: age
+## Deaths
+
+### By age
 
 ```{r index-2}
 umrti_base <- umrti %>% 
