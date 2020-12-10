@@ -901,7 +901,7 @@ sndys <- vikend_obchody %>%
 ```
 
 
-```{r sundays, include=F}
+```{r sundays, include=T}
 ggplot(vikend_obchody, aes(denvtydnu, y = zmena)) +
   geom_point(aes(colour = tyden_od, group = tyden_od)) +
   geom_line(aes(colour = tyden_od, group = tyden_od)) +
