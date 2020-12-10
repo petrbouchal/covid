@@ -353,14 +353,17 @@ ggpd %>%
         group = denvtydnu, x = tyden_zacinajici)) +
   facet_wrap(denvtydnu~., nrow = 1) +
   scale_x_date(date_breaks = "months", date_labels = "%x") +
-  theme_ptrr("both", multiplot = T)
+  theme_ptrr("both", multiplot = T) +
+  labs(title = "Potvrzené případy koronaviru podle dní",
+       caption = "@petrbouchal z dat MZd")
+
 ```
 
 ### Trend
 
 STL dekompozice - trend, 7-denní cyklická složka
 
-```{r}
+```{r, include=TRUE}
 nhsts <- tsibble(nhs, index = datum)
 
 nhsts_seasoned <- nhsts %>% 
@@ -787,7 +790,7 @@ ggplot(excess_data_long2 %>%
   labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
        subtitle = "Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\nPočty úmrtí 2017-19 přepočteny na věkovou strukturu roku 2019.\nData o celkové úmrtnosti mají zpoždění; poslední týdny jsou dopočteny z předchozích let\na aktuálních dat o Covid-19.",
        caption = "@petrbouchal z dat ČSÚ (týdenní počty úmrtí) a MZd (úmrtí na Covid)") +
-  theme(legend.position = c(.33, .85), legend.key.size = unit(.5, "cm"),
+  theme(legend.position = c(.33, .81), legend.key.size = unit(.5, "cm"),
         legend.box = "horizontal") +
   annotate("text", as.Date("1970-05-10"), 2300, label = "Průměr 2017-19", 
            family = "IBM Plex Sans Condensed", face = "bold")
@@ -807,14 +810,16 @@ ggplot(excess_data_long %>%
                                umrti_expected = "grey"),
                     labels = c("Ostatní",
                                "Covid-19",
-                               "Úroveň let 2017-19"), name = NULL) +
-  scale_alpha_discrete(range = c(1, .7), guide = "legend") +
+                               "Úroveň let 2017-19"), name = "Příčiny rozdílu proti 2017-19") +
+  scale_alpha_discrete(range = c(1, .7), guide = "legend", name = "Data o všech úmrtích za 2020") +
+  guides(fill = guide_legend(reverse = T, order = 1),
+         alpha = guide_legend()) +
   theme_ptrr("both") +
   scale_x_date(date_breaks = "month", date_labels = "%d %b") +
   labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
        subtitle = "Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\nPočty úmrtí 2017-19 přepočteny na věkovou strukturu roku 2019. Data o celkové úmrtnosti mají zpoždění.",
        caption = "@petrbouchal z dat ČSÚ (týdenní počty úmrtí) a MZd (úmrtí na Covid)") +
-  theme(legend.position = c(.33, .85), legend.key.size = unit(.5, "cm"))
+  theme(legend.position = c(.33, .79), legend.key.size = unit(.5, "cm"), legend.box = "horizontal")
 ```
 
 ### Excess deaths by age
