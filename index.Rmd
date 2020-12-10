@@ -330,6 +330,54 @@ heatmap_basedt_cr <- heatmap_basedt %>%
 
 ### Weekdays
 
+```{r weekdays-prep}
+ggpd <- nhs_bd %>% 
+  filter(datum > "2020-09-01") %>%
+  mutate(tyden_zacinajici = floor_date(datum, "week"),
+         denvtydnu = wday(datum, label = T, week_start = 1)) %>% 
+  count(datum, denvtydnu, tyden_zacinajici, name = "pocet")
+```
+
+```{r weekdays, include = T}
+ggpd %>% 
+  ggplot() +
+  geom_area(
+    scale = 1,
+    stat = "identity", show.legend = F,
+    aes(y = pocet, fill = denvtydnu,
+        colour = after_scale(colorspace::darken(fill, amount = .2)),
+        group = denvtydnu, x = tyden_zacinajici)) +
+  facet_wrap(denvtydnu~., nrow = 1) +
+  scale_x_date(date_breaks = "months", date_labels = "%x") +
+  theme_ptrr("both", multiplot = T)
+```
+
+### Trend
+
+STL dekompozice - trend, 7-denní cyklická složka
+
+```{r}
+nhsts <- tsibble(nhs, index = datum)
+
+nhsts_seasoned <- nhsts %>% 
+  model(STL(prirustkovy_pocet_nakazenych ~ season(window = 7))) %>%  
+  components()
+
+nhsts_seasoned %>% 
+  ggplot(aes(x = datum)) +
+  geom_line(aes(y = prirustkovy_pocet_nakazenych,
+                colour = "Počet nakažených"), size = .5) +
+  geom_line(aes(y = trend, colour = "Trend"), size = 1) +
+  scale_colour_manual(values = c("grey", "darkblue"), name = NULL) +
+  theme_ptrr("both") +
+  scale_x_date(breaks = "1 month",labels = scales::label_date_short()) +
+  labs(subtitle = "STL dekompozice - trend, očištěno o 7-denní cyklickou složku",
+       title = "Trend počtu nakažených")
+```
+
+
+### Age
+
 ```{r age-heatmap-cr-count}
 make_plot_base(heatmap_basedt_cr) +
   scale_fill_viridis_c(option = "B", labels = label_number_cz(),
