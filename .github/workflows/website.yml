@@ -5,6 +5,8 @@ name: Render and Deploy RMarkdown Website
     - cron:  '10 7 * * *'
 jobs:
   build:
+    env:
+        RENV_PATHS_ROOT: ~/Library/Application Support/renv
     runs-on: macos-latest
     steps:
       - name: Checkout repo
