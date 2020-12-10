@@ -352,7 +352,8 @@ ggpd %>%
         colour = after_scale(colorspace::darken(fill, amount = .2)),
         group = denvtydnu, x = tyden_zacinajici)) +
   facet_wrap(denvtydnu~., nrow = 1) +
-  scale_x_date(date_breaks = "months", date_labels = "%x") +
+  scale_y_number_cz(expand = expansion(0,0))+
+  scale_x_date(date_breaks = "months", date_labels = "%b") +
   theme_ptrr("both", multiplot = T) +
   labs(title = "Potvrzené případy koronaviru podle dní",
        caption = "@petrbouchal z dat MZd")
