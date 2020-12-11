@@ -820,7 +820,8 @@ ggplot(excess_data_long %>%
   labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
        subtitle = "Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\nPočty úmrtí 2017-19 přepočteny na věkovou strukturu roku 2019. Data o celkové úmrtnosti mají zpoždění.",
        caption = "@petrbouchal z dat ČSÚ (týdenní počty úmrtí) a MZd (úmrtí na Covid)") +
-  theme(legend.position = c(.33, .79), legend.key.size = unit(.5, "cm"), legend.box = "horizontal")
+  theme(legend.position = c(.33, .79), legend.key.size = unit(.5, "cm"), 
+        legend.box = "horizontal", legend.box.just = "top")
 ```
 
 ### Excess deaths by age
@@ -928,7 +929,7 @@ ggplot(vikend_obchody, aes(denvtydnu, y = zmena)) +
   geom_point(data = sndys, aes(fill = tyden_od, group = tyden_od), 
              size = 3, colour = "white", shape = 21) +
   facet_wrap(~kategorie_cz) +
-  theme_ptrr(family = "IBM Plex Sans Condensed", title_family = "IBM Plex Sans", multiplot = T, base_size = 16) +
+  theme_ptrr() +
   geom_label_repel(data = sndys, lineheight = .9, family = "IBM Plex Sans Condensed",
                    aes(label = format(date, "%d/%m"),
                        fill = tyden_od),
