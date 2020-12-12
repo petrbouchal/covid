@@ -442,7 +442,7 @@ make_plot_base(heatmap_basedt_kraje) +
        x = "Týden začínající...")
 ```
 
-## Deaths
+## Deaths {.tabset .tabset-pills}
 
 ### By age
 
