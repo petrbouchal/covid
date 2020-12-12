@@ -888,6 +888,7 @@ gd_dlouhe %>%
   filter(kraj_nazev == "Celá ČR",
          date > "2020-09-01") %>% 
   ggplot(aes(date, zmena)) +
+  geom_hline(yintercept = 0, colour = "black", linetype = "dotted") +
   geom_line(size = .5, colour = "grey") +
   geom_smooth(aes(colour = kategorie_cz), size = .5, show.legend = F) +
   facet_wrap(~ kategorie_cz) +
