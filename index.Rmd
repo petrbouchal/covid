@@ -881,7 +881,7 @@ TO DO
 source("google_load-transform.R")
 ```
 
-### By venue
+### By location type
 
 ```{r mob-venue, include=T}
 gd_dlouhe %>% 
