@@ -686,7 +686,10 @@ excess_data_long <- excess_data %>%
                             "umrti_excess", 
                             "umrti_covid",
                             "umrti_expected"))
+```
 
+
+```{r excess-data-daily, eval=F}
 excess_data_daily <- excess_data %>% 
   complete(day_sameyear_floored = full_seq(day_sameyear_floored, period = 1)) %>% 
   mutate(across(starts_with("umrti"), forecast::na.interp)) %>% 
@@ -725,7 +728,7 @@ ggplot(excess_data_long %>%
 #        res = 300, scale = 1.3)
 ```
 
-```{r excess-plot}
+```{r excess-plot, eval=F}
 excess_data_daily %>% 
   mutate(excess_spodni = if_else(umrti_mean_lastyrs > umrti_abs2020, 
                                  NA_real_, 
@@ -828,7 +831,7 @@ ggplot(excess_data_long %>%
 
 TO DO
 
-```{r index-8}
+```{r index-8, eval = FALSE}
 umrti_vek_tydny_floored <- umrti %>% 
   mutate(vek_grp = cut(vek, c(0, 15, 39, 64, 84, Inf), 
                        right = TRUE,
@@ -847,7 +850,7 @@ umrti_vek_tydny_floored <- umrti %>%
   summarise(umrti_covid = n())
 ```
 
-```{r index-9}
+```{r index-9, eval = FALSE}
 xdage <- umrti_vek_tydny_floored %>% 
   rename(vek_txt = vek_grp) %>% 
   # mutate(vek_txt = as.character(vek_txt)) %>% 
