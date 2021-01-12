@@ -308,8 +308,9 @@ make_plot_base <- function(data) {ggplot(data) +
 heatmap_basedt <- cases_grid %>% 
   left_join(cases_base) %>% 
   mutate(week = isoweek(datum),
-         datum_orig = datum) %>% 
-  mutate(datum =  as.Date(paste(2020, week, 1, sep="-"), "%Y-%U-%u") - days(6))
+         datum_orig = datum,
+         year_orig = year(datum)) %>% 
+  mutate(datum = floor_date(datum_orig,unit = "week", week_start = 1))
 
 heatmap_basedt_kraje <- heatmap_basedt %>% 
   group_by(kraj, datum, vek_range) %>%
@@ -462,10 +463,8 @@ umrti_grid <- umrti_base %>%
 
 umrti_heatmap_dt <- umrti_grid %>% 
   left_join(umrti_base) %>% 
-  mutate(week = isoweek(datum),
-         week_starting = as.Date(paste(2020, week, 1, sep="-"), 
-                                 "%Y-%U-%u") - days(6)) %>% 
-  group_by(week_starting, vek) %>%
+  mutate(week_starting = floor_date(datum, "week", week_start = 1)) %>% 
+  group_by(week_starting, vek_range) %>%
   summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum), 
             .groups = "drop") %>% 
   replace_na(replace = list(pocet = 0)) %>% 
@@ -475,7 +474,7 @@ umrti_heatmap_dt <- umrti_grid %>%
   mutate(podil = pocet/weekly_total)
 
 umrti_all_tydny_floored <- umrti_base %>% 
-  group_by(day_sameyear_floored) %>% 
+  group_by(rok, tyden, roktyden) %>% 
   summarise(umrti_covid = n())
 ```
 
@@ -496,7 +495,7 @@ zmr0 <- czso_get_table("130185", force_redownload = T)
 zmr <- zmr0 %>% 
   mutate(tyden = as.numeric(tyden),
          casref_do = as.Date(casref_do),
-         day_sameyear = make_date(1970, month = month(casref_do),
+         day_sameyear = make_date(2020, month = month(casref_do),
                                   day = day(casref_do))) %>% 
   mutate(vek_txt = fct_relevel(vek_txt, "celkem"))
 
@@ -553,7 +552,7 @@ zmr_normd_with_sum <- zmr_normd %>%
               summarise(across(c(hodnota, obyv_2019, pocet_obyv, normd), sum)) %>% 
               mutate(per_100k = hodnota/pocet_obyv * 1e5,
                      vek_txt = "celkem")) %>% 
-  mutate(day_sameyear = make_date(1970, month(casref_do), day(casref_do)))
+  mutate(day_sameyear = make_date(2020, month(casref_do), day(casref_do)))
 ```
 
 ```{r index-4, eval = F}
@@ -565,15 +564,14 @@ ggplot(zmr_normd_with_sum, aes(x = roktyden, colour = vek_txt, group = vek_txt))
 
 ```{r time-adjusting-prep}
 zmr_compare <- zmr_normd_with_sum %>% 
-  mutate(is2020 = rok == 2020,
-         day_sameyear_floored = floor_date(day_sameyear, "weeks"))
+  mutate(iscovid = rok %in% 2020:2021,
+         rok_dummy = if_else(iscovid, rok, 9999))
 ```
 
 ```{r time-adjusting-means}
 zmr_lastyrs <- zmr_compare %>% 
   filter(rok > 2016) %>%
-  group_by(is2020, vek_txt, tyden, 
-           day_sameyear_floored) %>% 
+  group_by(rok_dummy, iscovid, vek_txt, tyden) %>% 
   summarise(mean_dead_normd = mean(normd, na.rm = T), 
             mean_pop = mean(pocet_obyv, na.rm = T)) %>% 
   mutate(vek_txt = fct_relevel(vek_txt, "celkem"))
@@ -581,36 +579,38 @@ zmr_lastyrs <- zmr_compare %>%
 
 ```{r time-adjusting-ribbondata}
 zmr_ribbon_data <- zmr_normd_with_sum %>% 
-  mutate(is2020 = rok == 2020) %>% 
-  mutate(day_sameyear_floored = floor_date(day_sameyear, "weeks")) %>% 
-  group_by(is2020, vek_txt, tyden, day_sameyear_floored) %>% 
+  mutate(iscovid = rok %in% 2020:2021, 
+         rok_dummy = if_else(iscovid, rok, 9999)) %>% 
+  mutate(day_sameyear_floored = floor_date(day_sameyear, "weeks", week_start = 1)) %>% 
+  group_by(iscovid, rok_dummy, vek_txt, tyden) %>% 
   summarise(min = min(normd, na.rm = T), 
             max = max(normd, na.rm = T), .groups = "drop") %>% 
-  mutate(vek_txt = fct_relevel(vek_txt, "celkem"))
+  mutate(vek_txt = fct_relevel(vek_txt, "celkem"),
+         weekstart_2020 = as.Date(paste(2020, tyden, 1, sep="-"), "%Y-%U-%u") - days(6))
 ```
 
 ### Standardised
 
 ```{r annotations}
-lbls_grey <- tribble(~vek_txt, ~day_sameyear_floored, ~min, ~txt,
-               factor("celkem"), as.Date("1970-02-15"), 2600, "rozpětí\n2011-19",
+lbls_grey <- tribble(~vek_txt, ~weekstart_2020, ~min, ~txt,
+               factor("celkem"), as.Date("2020-02-15"), 2600, "rozpětí\n2011-19",
                )
-lbls_blue <- tribble(~vek_txt, ~day_sameyear_floored, ~min, ~txt,
-               factor("celkem"), as.Date("1970-04-25"), 1900, "2020"
+lbls_blue <- tribble(~vek_txt, ~weekstart_2020, ~min, ~txt,
+               factor("celkem"), as.Date("2020-04-25"), 1900, "2020"
                )
 ```
 
 ```{r age-adjusted-plot, fig.asp=0.6}
-ggplot(data = zmr_ribbon_data, mapping = aes(group = vek_txt)) +
-  geom_ribbon(data = zmr_ribbon_data %>% filter(!is2020),
+ggplot(data = zmr_ribbon_data, mapping = aes(group = vek_txt, x = weekstart_2020)) +
+  geom_ribbon(data = zmr_ribbon_data %>% filter(!iscovid),
               alpha = 0.3,
-              aes(x = day_sameyear_floored, ymin = min, ymax = max)) +
-  geom_line(data = zmr_ribbon_data %>% filter(is2020),
+              aes(x = weekstart_2020, ymin = min, ymax = max)) +
+  geom_line(data = zmr_ribbon_data %>% filter(iscovid),
             colour = "darkblue",
             size = 1,
-            aes(x = day_sameyear_floored, y = min)) +
-  geom_point(data = zmr_ribbon_data %>% filter(is2020),
-            aes(x = day_sameyear_floored, y = min), 
+            aes(y = min, group = rok_dummy)) +
+  geom_point(data = zmr_ribbon_data %>% filter(iscovid),
+            aes(y = min), 
             size = .6, colour = "darkblue", fill = "white", shape = 21) +
   facet_wrap(~vek_txt, scales = "free_y") +
   scale_x_date(date_breaks = "3 months",
@@ -621,13 +621,11 @@ ggplot(data = zmr_ribbon_data, mapping = aes(group = vek_txt)) +
        subtitle = str_glue("Přepočteno na věkovou strukturu roku 2019
                            Údaje do {last_date_fmt}. Modrá = 2020, šedá = rozpětí let 2011-2019"),
        caption = str_glue("Výpočet dle dat ČSÚ, sada 130185 (úmrtí) a 130142 (věk) | @petrbouchal {today_fmt}")) +
-  geom_text(data = lbls_grey, aes(x = day_sameyear_floored, 
-                            y = min, label = txt), 
+  geom_text(data = lbls_grey, aes(y = min, label = txt), 
             family = "Roboto Condensed",
             fontface = "bold",
             colour = "#454545",size = 2) +
-  geom_text(data = lbls_blue, aes(x = day_sameyear_floored, 
-                            y = min, label = txt), 
+  geom_text(data = lbls_blue, aes(y = min, label = txt), 
             family = "Roboto Condensed",
             fontface = "bold",
             colour = "darkblue", size = 2)
@@ -639,7 +637,7 @@ ggplot(data = zmr_ribbon_data, mapping = aes(group = vek_txt)) +
 ```{r mort-base}
 zemr_plot_base <- zmr %>% 
   ggplot(aes(day_sameyear, hodnota,
-             alpha = rok == 2020, size = rok == 2020)) +
+             alpha = rok %in% 2020:2021, size = rok %in% 2020:2021)) +
   geom_line(aes(colour = as.factor(rok), group = rok)) +
   scale_alpha_manual(values = c(`TRUE` = 1, `FALSE` = .4), guide = "none") +
   scale_size_manual(values = c(`TRUE` = .7, `FALSE` = .4), guide = "none") +
