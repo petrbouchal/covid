@@ -787,27 +787,31 @@ excess_data_daily %>%
 
 #### Alternative view, incl. recent Covid-19 deaths
 
-```{r index-5, eval = F}
+```{r index-5, eval = T}
 
 excess_data_long2 <- excess_data %>% 
-  pivot_longer(c(umrti_covid, umrti_abs2020_noncovid)) %>% 
+  pivot_longer(c(umrti_covid, umrti_abs_covidyears_noncovid)) %>% 
   mutate(name = fct_relevel(name, "umrti_covid"),
-         value = if_else(is.na(value), umrti_mean_lastyrs, value))
+         value = if_else(is.na(value), mean_dead_normd_avg_pastyears, value))
 
 date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 
 ggplot(excess_data_long2 %>% 
-         mutate(weekstart_2020 = as.Date(paste(2020, tyden, 1, sep="-"), "%Y-%U-%u") - days(6),
-                alpha = if_else(weekstart_2020 > date_last_stats, "nedostupná", "dostupná")) %>% 
+         mutate(weekstart_2020 = as.Date(paste(2020, tyden, 1, sep="-"), 
+                                         "%Y-%U-%u") - days(6),
+                alpha = if_else(weekstart_2020 > date_last_stats, 
+                                "nedostupná", "dostupná")), 
        aes(weekstart_2020)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
-  geom_line(aes(y = umrti_mean_lastyrs, colour = "Úroveň let 2017-19")) +
+  geom_line(aes(y = mean_dead_normd_avg_pastyears, 
+                colour = "Úroveň let 2017-19")) +
   scale_color_manual(values = "grey10", name = NULL, guide = "none") +
-  scale_fill_manual(values = c(umrti_abs2020_noncovid = "grey",
+  scale_fill_manual(values = c(stat_dead_normd_covidyears = "grey",
                                umrti_covid = "blue"),
-                    labels = c("Covid-19",
-                               "Ostatní"), name = "Příčiny rozdílu oproti 2017-19") +
-  scale_alpha_discrete(range = c(1, .7), guide = "legend", name = "Data o všech úmrtích za 2020") +
+                    labels = c("Covid-19", "Ostatní"), 
+                    name = "Příčiny rozdílu oproti 2017-19") +
+  scale_alpha_discrete(range = c(1, .7), guide = "legend",
+                       name = "Data o všech úmrtích za 2020") +
   guides(fill = guide_legend(reverse = T, order = 1),
          alpha = guide_legend()) +
   theme_ptrr("both") +
