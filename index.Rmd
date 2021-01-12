@@ -87,9 +87,12 @@ nhs_okr <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-ok
 umrti <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/umrti.csv") %>% 
   left_join(cisokr) %>% 
   left_join(ciskraj) %>% 
-  mutate(day_sameyear = make_date(1970, month = month(datum),
+  mutate(day_sameyear = make_date(2020, month = month(datum),
                                   day = day(datum)),
-         day_sameyear_floored = floor_date(day_sameyear, "week"))
+         day_sameyear_floored = floor_date(day_sameyear, "week", week_start = 1), 
+         tyden = isoweek(datum),
+         rok = year(datum),
+         roktyden = paste0(rok, "-W", str_pad(tyden, width = 2, pad = 0)))
 
 epis <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-okres-nakazeni-vyleceni-umrti.csv")
 ```
@@ -273,14 +276,14 @@ girafe(ggobj = lastpos_g, fonts = list(sans = "IBM Plex Sans"),
 ```{r age-grid}
 cases_base <- nhs_bd %>% 
   filter(datum > "2020-08-01", vek < 130) %>% 
-  mutate(vek = cut_width(vek, width = 15, boundary = 0, ordered_result = T) %>% 
+  mutate(vek_range = cut_width(vek, width = 15, boundary = 0, ordered_result = T) %>% 
            fct_relabel(str_remove_all, "\\(|\\)|\\]|\\[") %>% 
            fct_relabel(str_replace, "\\,", " - "),
          pocet = 1)
 
 cases_grid <- cases_base %>% 
-  select(datum, kraj, vek) %>% 
-  expand(kraj, datum = full_seq(datum, 1), vek)
+  select(datum, kraj, vek_range) %>% 
+  expand(kraj, datum = full_seq(datum, 1), vek_range)
 ```
 
 ```{r index-1}
@@ -309,10 +312,10 @@ heatmap_basedt <- cases_grid %>%
   mutate(datum =  as.Date(paste(2020, week, 1, sep="-"), "%Y-%U-%u") - days(6))
 
 heatmap_basedt_kraje <- heatmap_basedt %>% 
-  group_by(kraj, datum, vek) %>%
+  group_by(kraj, datum, vek_range) %>%
   filter(datum > "2020-08-01") %>% 
   summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum_orig), .groups = "drop") %>% 
-  complete(kraj, datum, vek) %>%
+  complete(kraj, datum, vek_range) %>%
   replace_na(replace = list(pocet = 0)) %>% 
   group_by(kraj, datum) %>%
   mutate(all_ages = sum(pocet, na.rm = T)) %>% 
@@ -321,10 +324,10 @@ heatmap_basedt_kraje <- heatmap_basedt %>%
   drop_na(kraj)
 
 heatmap_basedt_cr <- heatmap_basedt %>% 
-  group_by(datum, vek) %>% 
+  group_by(datum, vek_range) %>% 
   filter(datum > "2020-08-01") %>% 
   summarise(pocet = sum(pocet, na.rm = T)/n_distinct(datum_orig), .groups = "drop") %>% 
-  complete(datum, vek) %>% 
+  complete(datum, vek_range) %>% 
   replace_na(replace = list(pocet = 0)) %>% 
   group_by(datum) %>% 
   mutate(all_ages = sum(pocet, na.rm = T)) %>% 
@@ -391,7 +394,7 @@ make_plot_base(heatmap_basedt_cr) +
   scale_fill_viridis_c(option = "B", labels = label_number_cz(),
                        n.breaks = 6,
                        name = "Průměrný denní počet nových případů") + 
-  geom_tile(aes(datum, vek, fill = pocet)) +
+  geom_tile(aes(datum, vek_range, fill = pocet)) +
   labs(title = "Nové případy podle věku, po týdnech", x = "Týden začínající...",
        subtitle = "Průměrný denní počet nových případů v daném týdnu")
 ```
@@ -402,7 +405,7 @@ make_plot_base(heatmap_basedt_cr) +
 make_plot_base(heatmap_basedt_cr) +
   scale_fill_viridis_c(option = "B", labels = label_percent_cz(1),
                        name = "Podíl věkové skupiny v daném týdnu") + 
-  geom_tile(aes(datum, vek, fill = podil)) +
+  geom_tile(aes(datum, vek_range, fill = podil)) +
   guides(fill = guide_colorbar(title.position = "left", barwidth = unit(5, "cm"), 
                                title.vjust = .75)) +
   labs(title = "Věkové složení nových případů po týdnech", subtitle = "",
@@ -417,7 +420,7 @@ make_plot_base(heatmap_basedt_kraje) +
                        n.breaks = 6,
                        name = "Denní počet nových případů") + 
   facet_wrap(~ kraj) +
-  geom_tile(aes(datum, vek, fill = pocet)) +
+  geom_tile(aes(datum, vek_range, fill = pocet)) +
   guides(fill = guide_colorbar(title.position = "top", barwidth = unit(5, "cm"))) +
   theme(legend.position = c(.75, .02),
         axis.text = element_text(size = 8)) +
@@ -432,7 +435,7 @@ make_plot_base(heatmap_basedt_kraje) +
   scale_fill_viridis_c(option = "B", labels = label_percent_cz(1),
                        name = "Podíl věkové skupiny v daném týdnu") + 
   facet_wrap(~ kraj) +
-  geom_tile(aes(datum, vek, fill = podil)) +
+  geom_tile(aes(datum, vek_range, fill = podil)) +
   guides(fill = guide_colorbar(title.position = "top", barwidth = unit(5, "cm"))) +
   theme(legend.position = c(.75, .02), , 
         legend.margin = unit(c(0,0,0,0), "cm"),
@@ -448,14 +451,14 @@ make_plot_base(heatmap_basedt_kraje) +
 
 ```{r index-2}
 umrti_base <- umrti %>% 
-  mutate(vek = cut_width(vek, width = 10, boundary = 0, ordered_result = T) %>% 
+  mutate(vek_range = cut_width(vek, width = 10, boundary = 0, ordered_result = T) %>% 
            fct_relabel(str_remove_all, "\\(|\\)|\\]|\\[") %>% 
            fct_relabel(str_replace, "\\,", " - "),
          pocet = 1)
 
 umrti_grid <- umrti_base %>% 
-  select(vek, datum) %>% 
-  expand(vek, datum = full_seq(datum, 1))
+  select(vek_range, datum) %>% 
+  expand(vek_range, datum = full_seq(datum, 1))
 
 umrti_heatmap_dt <- umrti_grid %>% 
   left_join(umrti_base) %>% 
@@ -480,7 +483,7 @@ umrti_all_tydny_floored <- umrti_base %>%
 make_plot_base(umrti_heatmap_dt) +
   scale_fill_viridis_c(option = "B", labels = label_number_cz(1),
                        name = "Počet úmrtí v daném týdnu") + 
-  geom_tile(aes(week_starting, vek, fill = pocet)) +
+  geom_tile(aes(week_starting, vek_range, fill = pocet)) +
   labs(title = "Úmrtí podle věku",
        subtitle = "Průměrný denní počet úmrtí v daném týdnu",
        x = "Týden začínající...")
