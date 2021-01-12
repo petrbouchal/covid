@@ -706,16 +706,6 @@ excess_data_long <- excess_data %>%
                             "umrti_expected"))
 ```
 
-
-```{r excess-data-daily, eval=F}
-excess_data_daily <- excess_data %>% 
-  mutate(weekstart_2020 = as.Date(paste(rok, tyden, 1, sep="-"), "%Y-%U-%u") - days(6)) %>% 
-  complete(weekstart_2020 = full_seq(weekstart_2020, period = 1)) %>% 
-  mutate(across(starts_with("umrti"), forecast::na.interp)) %>% 
-  mutate(umrti_abs2020 = if_else(weekstart_2020 > max(zmr$day_sameyear[zmr$rok %in% 2020:2021]),
-                                NA_real_, umrti_abs2020))
-```
-
 ```{r index-7, eval = T}
 
 date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
@@ -746,43 +736,6 @@ ggplot(excess_data_long %>%
 
 # ggsave("covid-excess-zerobase-twitter.png", device = ragg::agg_png, width = 6, height = 6*9/16, 
 #        res = 300, scale = 1.3)
-```
-
-```{r excess-plot, eval=F}
-excess_data_daily %>% 
-  mutate(excess_spodni = if_else(umrti_mean_lastyrs > umrti_abs2020, 
-                                 NA_real_, 
-                                 umrti_mean_lastyrs),
-         excess_horni = if_else(umrti_mean_lastyrs > umrti_abs2020, 
-                                NA_real_, 
-                                umrti_abs2020 - umrti_covid)) %>% 
-  ggplot(aes(x = day_sameyear_floored)) +
-  scale_colour_manual(values = c(`průměr 2017-19` = "grey",
-                                 `2020` = "blue",
-                                 `Ostatní` = "pink", 
-                                 `Covid-19` = "lightblue"),
-                      name = "Počet zemřelých za týden") +
-  geom_ribbon(aes(ymin = umrti_abs2020 - umrti_covid,
-                  ymax = umrti_abs2020,
-                  fill = "Covid-19")) +
-  geom_ribbon(aes(ymin = excess_spodni,
-                  ymax = excess_horni,
-                  fill = "Ostatní")) +
-  geom_line(aes(y = umrti_mean_lastyrs, colour = "průměr 2017-19"), size = .5) +
-  geom_line(aes(y = umrti_abs2020, colour = "2020"), size = .5) +
-  scale_fill_manual(values = c(`Ostatní` = "pink", 
-                               `Covid-19` = "lightblue"),
-                    name = "Příčiny rozdílu") +
-  scale_y_continuous(limits = c(0, NA)) +
-  theme_ptrr("both") +
-  scale_x_date(date_breaks = "month", date_labels = "%d %b") +
-  guides(colour = guide_legend(order = 1),
-         fill = guide_legend(order = 2)) +
-  labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
-       subtitle = "Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\nPočty úmrtí 2017-19 přepočteny na věkovou strukturu roku 2019.",
-       caption = "@petrbouchal z dat ČSÚ (týdenní počty úmrtí) a MZd (úmrtí na Covid)")
-
-
 ```
 
 #### Alternative view, incl. recent Covid-19 deaths
