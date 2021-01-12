@@ -92,7 +92,10 @@ umrti <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/umrti.csv
          day_sameyear_floored = floor_date(day_sameyear, "week", week_start = 1), 
          tyden = isoweek(datum),
          rok = year(datum),
-         roktyden = paste0(rok, "-W", str_pad(tyden, width = 2, pad = 0)))
+         tyden = if_else(tyden == 53 & rok == 2021, 1, tyden),
+         roktyden = paste0(rok, "-W", str_pad(tyden, width = 2, pad = 0)) %>%
+           recode(`2021-W53` = "2021-W01"),
+         )
 
 epis <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-okres-nakazeni-vyleceni-umrti.csv")
 ```
@@ -537,7 +540,7 @@ vek_do2020 <- vek_slct %>%
 ```
 
 ```{r time-adjusting-normalise}
-zmr_normd <- zmr %>% 
+zmr_czso_normd <- zmr %>% 
   filter(vek_txt != "celkem") %>% 
   select(hodnota, rok, tyden, roktyden, vek_txt,
          idhod, stapro_kod, casref_do) %>% 
@@ -546,8 +549,8 @@ zmr_normd <- zmr %>%
   left_join(vek_2019) %>% 
   mutate(normd = per_100k * obyv_2019 / 1e5)
 
-zmr_normd_with_sum <- zmr_normd %>% 
-  bind_rows(zmr_normd %>% 
+zmr_czso_normd_with_sum <- zmr_czso_normd %>% 
+  bind_rows(zmr_czso_normd %>% 
               group_by(rok, tyden, roktyden, casref_do) %>% 
               summarise(across(c(hodnota, obyv_2019, pocet_obyv, normd), sum)) %>% 
               mutate(per_100k = hodnota/pocet_obyv * 1e5,
@@ -556,29 +559,30 @@ zmr_normd_with_sum <- zmr_normd %>%
 ```
 
 ```{r index-4, eval = F}
-ggplot(zmr_normd_with_sum, aes(x = roktyden, colour = vek_txt, group = vek_txt)) +
+ggplot(zmr_czso_normd_with_sum, aes(x = roktyden, colour = vek_txt, group = vek_txt)) +
   geom_line(aes(y = hodnota), size = .3) +
   geom_line(aes(y = normd), linetype = "dashed", size = .3) +
   facet_grid(vek_txt ~ ., scales = "free_y")
 ```
 
 ```{r time-adjusting-prep}
-zmr_compare <- zmr_normd_with_sum %>% 
+zmr_czso_compare <- zmr_czso_normd_with_sum %>% 
   mutate(iscovid = rok %in% 2020:2021,
          rok_dummy = if_else(iscovid, rok, 9999))
 ```
 
 ```{r time-adjusting-means}
-zmr_lastyrs <- zmr_compare %>% 
-  filter(rok > 2016) %>%
+zmr_czso_avg <- zmr_czso_compare %>% 
+  filter(rok > 2014) %>%
   group_by(rok_dummy, iscovid, vek_txt, tyden) %>% 
   summarise(mean_dead_normd = mean(normd, na.rm = T), 
             mean_pop = mean(pocet_obyv, na.rm = T)) %>% 
-  mutate(vek_txt = fct_relevel(vek_txt, "celkem"))
+  mutate(vek_txt = fct_relevel(vek_txt, "celkem"),
+         roktyden = paste0(rok_dummy, "-W", str_pad(tyden, width = 2, pad = 0)))
 ```
 
 ```{r time-adjusting-ribbondata}
-zmr_ribbon_data <- zmr_normd_with_sum %>% 
+zmr_ribbon_data <- zmr_czso_normd_with_sum %>% 
   mutate(iscovid = rok %in% 2020:2021, 
          rok_dummy = if_else(iscovid, rok, 9999)) %>% 
   mutate(day_sameyear_floored = floor_date(day_sameyear, "weeks", week_start = 1)) %>% 
@@ -669,16 +673,29 @@ zemr_plot_base +
 
 ### Covid and excess deaths
 
+```{r}
+zmr_czso_covidyears <- zmr_czso_avg %>% 
+  ungroup() %>% 
+  filter(rok_dummy != 9999) %>% 
+  select(stat_dead_normd_covidyears = mean_dead_normd, roktyden, vek_txt)
+  
+zmr_czso_pastyears <- zmr_czso_avg %>% 
+  ungroup() %>% 
+  filter(rok_dummy == 9999) %>% 
+  select(tyden, mean_dead_normd_avg_pastyears = mean_dead_normd, vek_txt)
+```
+
+
 ```{r excess-data, include=T}
-excess_data <- umrti_all_tydny_floored %>%
-  left_join(zmr_lastyrs %>% 
-              filter(vek_txt == "celkem")) %>% 
-  select(day_sameyear_floored, umrti_covid, mean_dead_normd, is2020) %>% 
-  spread(is2020, mean_dead_normd) %>% 
-  rename(umrti_mean_lastyrs = `FALSE`, umrti_abs2020 = `TRUE`) %>% 
-  mutate(umrti_abs2020_noncovid = umrti_abs2020 - umrti_covid,
-         umrti_expected = umrti_mean_lastyrs,
-         umrti_excess = umrti_abs2020 - umrti_mean_lastyrs - umrti_covid) 
+excess_data <- umrti_all_tydny_floored %>% 
+  left_join(zmr_czso_covidyears %>% 
+              filter(vek_txt == "celkem")) %>%
+  left_join(zmr_czso_pastyears %>% 
+              filter(vek_txt == "celkem") %>% 
+              select(-vek_txt)) %>% 
+  mutate(umrti_abs_covidyears_noncovid = stat_dead_normd_covidyears - umrti_covid,
+         umrti_expected = mean_dead_normd_avg_pastyears,
+         umrti_excess = stat_dead_normd_covidyears - mean_dead_normd_avg_pastyears - umrti_covid) 
 
 excess_data_long <- excess_data %>% 
   pivot_longer(c(umrti_covid, umrti_expected,
@@ -692,20 +709,22 @@ excess_data_long <- excess_data %>%
 
 ```{r excess-data-daily, eval=F}
 excess_data_daily <- excess_data %>% 
-  complete(day_sameyear_floored = full_seq(day_sameyear_floored, period = 1)) %>% 
+  mutate(weekstart_2020 = as.Date(paste(rok, tyden, 1, sep="-"), "%Y-%U-%u") - days(6)) %>% 
+  complete(weekstart_2020 = full_seq(weekstart_2020, period = 1)) %>% 
   mutate(across(starts_with("umrti"), forecast::na.interp)) %>% 
-  mutate(umrti_abs2020 = if_else(day_sameyear_floored > max(zmr$day_sameyear[zmr$rok==2020]),
+  mutate(umrti_abs2020 = if_else(weekstart_2020 > max(zmr$day_sameyear[zmr$rok %in% 2020:2021]),
                                 NA_real_, umrti_abs2020))
 ```
 
 ```{r index-7, eval = T}
 
-date_last_stats <- max(zmr$day_sameyear[zmr$rok == 2020])
+date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 
 ggplot(excess_data_long %>% 
-         mutate(alpha = if_else(day_sameyear_floored > date_last_stats, "nedostupná", "dostupná")) %>% 
+         mutate(weekstart_covidyears = as.Date(paste(rok, tyden, 1, sep="-"), "%Y-%U-%u") - days(6),
+                alpha = if_else(weekstart_covidyears > date_last_stats, "nedostupná", "dostupná")) %>% 
          filter(name != "umrti_expected"),
-       aes(day_sameyear_floored)) +
+       aes(x = weekstart_covidyears)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
   guides(fill = guide_legend(reverse = T, order = 1),
          alpha = guide_legend(override.aes = list(fill = "darkblue"))) +
@@ -718,11 +737,11 @@ ggplot(excess_data_long %>%
   theme_ptrr("both",
              legend.box = "horizontal",
              legend.position = c(.33, .85), legend.key.size = unit(.5, "cm")) +
-  scale_x_date(date_breaks = "month", date_labels = "%d %b") +
+  scale_x_date(breaks = "1 month", labels = scales::label_date_short()) +
   labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
        subtitle = str_glue("Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\n",
-                           "0 = průměr let 2017-19, přepočtený na věkovou strukturu roku 2019\n",
-                           "Data o celkové úmrtnosti mají zpoždění.\n"),
+                           "0 = průměr let 2015-19, přepočtený na věkovou strukturu roku 2019\n",
+                           "Data o úmrtnosti mají zpoždění. C-19 úmrtí za poslední týden mohou být neúplná.\n"),
        caption = "@petrbouchal z dat ČSÚ (týdenní počty úmrtí; věková struktura populace) a MZd (úmrtí na Covid)")
 
 # ggsave("covid-excess-zerobase-twitter.png", device = ragg::agg_png, width = 6, height = 6*9/16, 
@@ -768,18 +787,19 @@ excess_data_daily %>%
 
 #### Alternative view, incl. recent Covid-19 deaths
 
-```{r index-5, eval = T}
+```{r index-5, eval = F}
 
 excess_data_long2 <- excess_data %>% 
   pivot_longer(c(umrti_covid, umrti_abs2020_noncovid)) %>% 
   mutate(name = fct_relevel(name, "umrti_covid"),
          value = if_else(is.na(value), umrti_mean_lastyrs, value))
 
-date_last_stats <- max(zmr$day_sameyear[zmr$rok == 2020])
+date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 
 ggplot(excess_data_long2 %>% 
-         mutate(alpha = if_else(day_sameyear_floored > date_last_stats, "nedostupná", "dostupná")),
-       aes(day_sameyear_floored)) +
+         mutate(weekstart_2020 = as.Date(paste(2020, tyden, 1, sep="-"), "%Y-%U-%u") - days(6),
+                alpha = if_else(weekstart_2020 > date_last_stats, "nedostupná", "dostupná")) %>% 
+       aes(weekstart_2020)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
   geom_line(aes(y = umrti_mean_lastyrs, colour = "Úroveň let 2017-19")) +
   scale_color_manual(values = "grey10", name = NULL, guide = "none") +
@@ -797,17 +817,19 @@ ggplot(excess_data_long2 %>%
        caption = "@petrbouchal z dat ČSÚ (týdenní počty úmrtí) a MZd (úmrtí na Covid)") +
   theme(legend.position = c(.33, .81), legend.key.size = unit(.5, "cm"),
         legend.box = "horizontal") +
-  annotate("text", as.Date("1970-05-10"), 2300, label = "Průměr 2017-19", 
+  annotate("text", as.Date("2020-05-10"), 2300, label = "Průměr 2017-19", 
            family = "IBM Plex Sans Condensed", face = "bold")
 ```
 
 ```{r index-6, eval = T}
 
-date_last_stats <- max(zmr$day_sameyear[zmr$rok == 2020])
+date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 
 ggplot(excess_data_long %>% 
-         mutate(alpha = if_else(day_sameyear_floored > date_last_stats, "nedostupná", "dostupná")),
-       aes(day_sameyear_floored)) +
+         mutate(weekstart_covidyears = as.Date(paste(rok, tyden, 1, sep="-"),
+                                               "%Y-%U-%u") - days(6),
+                alpha = if_else(weekstart_covidyears > date_last_stats, "nedostupná", "dostupná")),
+       aes(weekstart_covidyears)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
   # geom_line(aes(y = umrti_mean_lastyrs)) +
   scale_fill_manual(values = c(umrti_excess = "darkred",
@@ -815,7 +837,7 @@ ggplot(excess_data_long %>%
                                umrti_expected = "grey"),
                     labels = c("Ostatní",
                                "Covid-19",
-                               "Úroveň let 2017-19"), name = "Příčiny rozdílu proti 2017-19") +
+                               "Úroveň let 2015-19"), name = "Příčiny rozdílu proti 2017-19") +
   scale_alpha_discrete(range = c(1, .7), guide = "legend", name = "Data o všech úmrtích za 2020") +
   guides(fill = guide_legend(reverse = T, order = 1),
          alpha = guide_legend()) +
