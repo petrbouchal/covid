@@ -92,10 +92,10 @@ umrti <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/umrti.csv
          day_sameyear_floored = floor_date(day_sameyear, "week", week_start = 1), 
          tyden = isoweek(datum),
          rok = year(datum),
-         tyden = if_else(tyden == 53 & rok == 2021, 1, tyden),
-         roktyden = paste0(rok, "-W", str_pad(tyden, width = 2, pad = 0)) %>%
-           recode(`2021-W53` = "2021-W01"),
-         )
+         rok_weekbased = format(datum, "%G"),
+         roktyden_iso = paste0(rok_weekbased, "-W", 
+                               str_pad(tyden, width = 2, pad = 0)
+         ))
 
 epis <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-okres-nakazeni-vyleceni-umrti.csv")
 ```
@@ -477,7 +477,7 @@ umrti_heatmap_dt <- umrti_grid %>%
   mutate(podil = pocet/weekly_total)
 
 umrti_all_tydny_floored <- umrti_base %>% 
-  group_by(rok, tyden, roktyden) %>% 
+  group_by(rok, tyden, roktyden_iso) %>% 
   summarise(umrti_covid = n())
 ```
 
@@ -689,10 +689,11 @@ zmr_czso_pastyears <- zmr_czso_avg %>%
 ```{r excess-data, include=T}
 excess_data <- umrti_all_tydny_floored %>% 
   left_join(zmr_czso_covidyears %>% 
-              filter(vek_txt == "celkem")) %>%
+              filter(vek_txt == "celkem"),
+            by = c("roktyden_iso" = "roktyden")) %>%
   left_join(zmr_czso_pastyears %>% 
               filter(vek_txt == "celkem") %>% 
-              select(-vek_txt)) %>% 
+              select(-vek_txt)) %>%
   mutate(umrti_abs_covidyears_noncovid = stat_dead_normd_covidyears - umrti_covid,
          umrti_expected = mean_dead_normd_avg_pastyears,
          umrti_excess = stat_dead_normd_covidyears - mean_dead_normd_avg_pastyears - umrti_covid) 
@@ -711,9 +712,13 @@ excess_data_long <- excess_data %>%
 date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 
 ggplot(excess_data_long %>% 
-         mutate(weekstart_covidyears = as.Date(paste(rok, tyden, 1, sep="-"), "%Y-%U-%u") - days(6),
-                alpha = if_else(weekstart_covidyears > date_last_stats, "nedostupná", "dostupná")) %>% 
-         filter(name != "umrti_expected"),
+         mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
+                                                                     "-", 1)),
+                alpha = if_else(weekstart_covidyears > date_last_stats, 
+                                "nedostupná", "dostupná")) %>% 
+         filter(name != "umrti_expected") %>% 
+         group_by(weekstart_covidyears, name, alpha) %>% 
+         summarise(value = sum(value)),
        aes(x = weekstart_covidyears)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
   guides(fill = guide_legend(reverse = T, order = 1),
