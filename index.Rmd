@@ -723,7 +723,7 @@ ggplot(excess_data_long %>%
                     labels = c("Ostatní",
                                "Covid-19"), name = "Příčiny rozdílů oproti 2017-19") +
   scale_alpha_discrete(range = c(1, .7), guide = "legend",
-                       name = "Data o všech úmrtích za 2020") +
+                       name = "Data o všech úmrtích za 2020/21") +
   theme_ptrr("both",
              legend.box = "horizontal",
              legend.position = c(.33, .85), legend.key.size = unit(.5, "cm")) +
@@ -795,7 +795,7 @@ ggplot(excess_data_long %>%
                     labels = c("Ostatní",
                                "Covid-19",
                                "Úroveň let 2015-19"), name = "Příčiny rozdílu proti 2017-19") +
-  scale_alpha_discrete(range = c(1, .7), guide = "legend", name = "Data o všech úmrtích za 2020") +
+  scale_alpha_discrete(range = c(1, .7), guide = "legend", name = "Data o všech úmrtích za 2020/21") +
   guides(fill = guide_legend(reverse = T, order = 1),
          alpha = guide_legend()) +
   theme_ptrr("both") +
