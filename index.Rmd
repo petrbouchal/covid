@@ -626,11 +626,11 @@ ggplot(data = zmr_ribbon_data, mapping = aes(group = vek_txt, x = weekstart_2020
                            Údaje do {last_date_fmt}. Modrá = 2020, šedá = rozpětí let 2011-2019"),
        caption = str_glue("Výpočet dle dat ČSÚ, sada 130185 (úmrtí) a 130142 (věk) | @petrbouchal {today_fmt}")) +
   geom_text(data = lbls_grey, aes(y = min, label = txt), 
-            family = "Roboto Condensed",
+            family = "IBM Plex Sans Condensed",
             fontface = "bold",
             colour = "#454545",size = 2) +
   geom_text(data = lbls_blue, aes(y = min, label = txt), 
-            family = "Roboto Condensed",
+            family = "IBM Plex Sans Condensed",
             fontface = "bold",
             colour = "darkblue", size = 2)
 
