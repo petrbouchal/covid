@@ -731,7 +731,7 @@ ggplot(excess_data_long %>%
                        name = "Data o všech úmrtích za 2020/21") +
   theme_ptrr("both",
              legend.box = "horizontal",
-             legend.position = c(.33, .85), legend.key.size = unit(.5, "cm")) +
+             legend.position = c(.35, .85), legend.key.size = unit(.5, "cm")) +
   scale_x_date(breaks = "1 month", labels = scales::label_date_short()) +
   labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
        subtitle = str_glue("Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\n",
