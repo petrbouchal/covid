@@ -52,8 +52,8 @@ umrti_base_dots %>%
   ggplot(aes(x = datum, y = vek_range)) +
   # geom_tile(fill = "black", colour = NA) +
   geom_point(aes(y = vek),
-             alpha = 1, size = 1, colour = "white", 
-             position = position_jitter(seed = 1L)) +
+             alpha = 1, size = 1, colour = "white",
+             position = position_jitter(seed = 1L, height = .6, width = .6)) +
   scale_x_date(date_breaks = "month", 
                labels = label_date_short(), 
                expand = expansion(0, 0)) +
@@ -65,10 +65,12 @@ umrti_base_dots %>%
                    text = element_text(colour = "white")) +
   labs(title = label_number_cz()(celkem), y = "věk") +
   gghighlight::gghighlight(selected == 1, label_key = label, use_direct_label = T, 
-                           label_params = list(label.size = 0, fill = "grey20", size = 2,
-                                               segment.alpha = .6,
-                                               colour = "grey80", hjust = 0, lineheight = .8),
-                           unhighlighted_params = list(colour = "firebrick", size = .6, alpha = .4))
+                           label_params = list(label.size = 0, fill = "grey10", size = 2, alpha = .75,
+                                               segment.alpha = .4,
+                                               family = "IBM Plex Sans",
+                                               colour = "grey80", hjust = 0, lineheight = .8
+                                               ),
+                           unhighlighted_params = list(colour = "firebrick", size = .6, alpha = .3))
 
 ggsave("dots-twitter.png", device = ragg::agg_png, width = 6, height = 6*9/16, res = 300, scale = 2)
        
