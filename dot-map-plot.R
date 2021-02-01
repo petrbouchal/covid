@@ -39,7 +39,7 @@ umrti_base_dots <- umrti %>%
 mean(umrti_base_dots$selected)
 sum(umrti_base_dots$selected)
 
-celkem <- sum(umrti_base$pocet, na.rm = T)
+celkem <- sum(umrti_base_dots$pocet, na.rm = T)
 
 umrti_base_dots %>% 
   count(selected, wt = mean(vek))
