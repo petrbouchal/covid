@@ -699,12 +699,18 @@ excess_data <- umrti_all_tydny_floored %>%
          umrti_excess = stat_dead_normd_covidyears - mean_dead_normd_avg_pastyears - umrti_covid) 
 
 excess_data_long <- excess_data %>% 
+  group_by(roktyden_iso) %>% 
+  summarise(umrti_covid = sum(umrti_covid),
+            umrti_excess = sum(umrti_excess),
+            umrti_expected = mean(umrti_expected)) %>% 
   pivot_longer(c(umrti_covid, umrti_expected,
                  umrti_excess)) %>% 
   mutate(name = fct_relevel(name, 
                             "umrti_excess", 
                             "umrti_covid",
-                            "umrti_expected"))
+                            "umrti_expected")) %>% 
+  group_by(roktyden_iso, name) %>% 
+  summarise(value = sum(value))
 ```
 
 ```{r index-7, eval = T}
@@ -748,15 +754,20 @@ ggplot(excess_data_long %>%
 ```{r index-5, eval = T}
 
 excess_data_long2 <- excess_data %>% 
+  group_by(roktyden_iso, umrti_abs_covidyears_noncovid) %>% 
+  summarise(umrti_covid = sum(umrti_covid),
+            umrti_expected = mean(umrti_expected),
+            mean_dead_normd_avg_pastyears = mean(mean_dead_normd_avg_pastyears)) %>% 
   pivot_longer(c(umrti_covid, umrti_abs_covidyears_noncovid)) %>% 
   mutate(name = fct_relevel(name, "umrti_covid"),
-         value = if_else(is.na(value), mean_dead_normd_avg_pastyears, value))
+         value = if_else(is.na(value), umrti_expected, value)) %>% 
+  group_by(roktyden_iso, name)
 
 date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 
 ggplot(excess_data_long2 %>% 
-         mutate(weekstart_covidyears = as.Date(paste(rok, tyden, 1, sep="-"), 
-                                         "%Y-%U-%u") - days(6),
+         mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
+                                                                     "-", 1)),
                 alpha = if_else(weekstart_covidyears > date_last_stats, 
                                 "nedostupná", "dostupná")), 
        aes(weekstart_covidyears)) +
@@ -788,8 +799,8 @@ ggplot(excess_data_long2 %>%
 date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 
 ggplot(excess_data_long %>% 
-         mutate(weekstart_covidyears = as.Date(paste(rok, tyden, 1, sep="-"),
-                                               "%Y-%U-%u") - days(6),
+         mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
+                                                                     "-", 1)),
                 alpha = if_else(weekstart_covidyears > date_last_stats, "nedostupná", "dostupná")),
        aes(weekstart_covidyears)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
