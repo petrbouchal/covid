@@ -688,6 +688,8 @@ zmr_czso_pastyears <- zmr_czso_avg %>%
 
 ```{r excess-data, include=T}
 excess_data <- umrti_all_tydny_floored %>% 
+  group_by(roktyden_iso, tyden) %>% 
+  summarise(umrti_covid = sum(umrti_covid)) %>% 
   left_join(zmr_czso_covidyears %>% 
               filter(vek_txt == "celkem"),
             by = c("roktyden_iso" = "roktyden")) %>%
@@ -720,7 +722,7 @@ date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 ggplot(excess_data_long %>% 
          mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
                                                                      "-", 1)),
-                alpha = if_else(weekstart_covidyears > date_last_stats, 
+                alpha = if_else(weekstart_covidyears >= (date_last_stats + days(2)), 
                                 "nedostupná", "dostupná")) %>% 
          filter(name != "umrti_expected") %>% 
          group_by(weekstart_covidyears, name, alpha) %>% 
@@ -768,7 +770,7 @@ date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 ggplot(excess_data_long2 %>% 
          mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
                                                                      "-", 1)),
-                alpha = if_else(weekstart_covidyears > date_last_stats, 
+                alpha = if_else(weekstart_covidyears > date_last_stats + 2, 
                                 "nedostupná", "dostupná")), 
        aes(weekstart_covidyears)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
@@ -801,7 +803,7 @@ date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 ggplot(excess_data_long %>% 
          mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
                                                                      "-", 1)),
-                alpha = if_else(weekstart_covidyears > date_last_stats, "nedostupná", "dostupná")),
+                alpha = if_else(weekstart_covidyears > (date_last_stats + 2), "nedostupná", "dostupná")),
        aes(weekstart_covidyears)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
   # geom_line(aes(y = umrti_mean_lastyrs)) +
@@ -829,12 +831,13 @@ TO DO
 
 ```{r index-8, eval = FALSE}
 umrti_vek_tydny_floored <- umrti %>% 
-  mutate(vek_grp = cut(vek, c(0, 15, 39, 64, 84, Inf), 
+  mutate(vek_grp = cut(vek, c(0, 15, 39, 64, 74, 84, Inf), 
                        right = TRUE,
                        labels = c("0-14",
                                   "15-39",
                                   "40-64",
-                                  "65-84",
+                                  "65-74",
+                                  "75-84",
                                   "85 a více"),
                        ordered_result = T) %>% 
            fct_expand("celkem")
@@ -850,21 +853,55 @@ umrti_vek_tydny_floored <- umrti %>%
 xdage <- umrti_vek_tydny_floored %>% 
   rename(vek_txt = vek_grp) %>% 
   # mutate(vek_txt = as.character(vek_txt)) %>% 
-  left_join(zmr_lastyrs %>% 
+  left_join(zmr_czso_avg %>% 
               ungroup() %>% 
               mutate(vek_txt = ordered(vek_txt))
-            )
+            ) %>% 
+  replace_na(list(umrti_covid = NA))
+```
+
+```{r, eval=F}
+xdage0 <- zmr_czso_avg %>% 
+  ungroup() %>% 
+  mutate(vek_txt = ordered(vek_txt)) %>% 
+  left_join(umrti_vek_tydny_floored %>% 
+              rename(vek_txt = vek_grp)) %>% 
+  replace_na(list(umrti_covid = NA)) %>% 
+  select(-mean_pop) %>% 
+  spread(iscovid, mean_dead_normd) %>% 
+  rename(umrti_trend = `FALSE`, umrti_2020 = `TRUE`) %>% 
+  mutate(umrti_excess = umrti_2020 - umrti_trend)
+
+xdage <- bind_rows(excess_data_age0,
+  excess_data_age0 %>% 
+  group_by(day_sameyear_floored) %>% 
+  summarise(across(starts_with("umrti_"), sum, na.rm = F)) %>% 
+  mutate(vek_txt = "celkem"))
 ```
 
 ```{r index-10, eval=F}
 xdage %>% 
-  filter(!is2020) %>% 
   ggplot(aes(day_sameyear_floored)) +
-  geom_line(aes(y = umrti_covid/mean_dead_normd)) +
+  geom_line(aes(y = umrti_covid/umrti_2020)) +
   facet_wrap(~ vek_txt)
 ```
 
+```{r, eval=F}
+ggplot(xdage, aes(x = day_sameyear_floored)) +
+  geom_line(aes(y = umrti_excess, colour = "celková nadúmrtí"), size = 0.5) +
+  geom_line(aes(y = umrti_covid, colour = "úmrtí na COVID-19"), size = 0.5) +
+  facet_wrap(~ vek_txt) +
+  scale_colour_manual(values = c("darkgrey", "darkblue"), name = NULL) +
+  theme_ptrr("both", multiplot = T)
+```
+
+
 ### Excess deaths by region
+
+```{r}
+
+```
+
 
 ### Causes
 
