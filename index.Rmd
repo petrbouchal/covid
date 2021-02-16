@@ -31,6 +31,8 @@ library(ggrepel)
 library(tsibble)
 library(fabletools)
 library(feasts)
+library(ISOweek)
+
 
 Sys.setlocale("LC_TIME", "cs_CZ.UTF-8")
 
@@ -533,10 +535,13 @@ vek_2019 <- vek_slct %>%
   rename(obyv_2019 = pocet_obyv) %>% 
   select(-rok)
 
-vek_do2020 <- vek_slct %>% 
+vek_do2021 <- vek_slct %>% 
   bind_rows(vek_slct %>% 
               filter(rok == 2019) %>% 
-              mutate(rok = 2020))
+              mutate(rok = 2020)) %>% 
+  bind_rows(vek_slct %>% 
+              filter(rok == 2019) %>% 
+              mutate(rok = 2021))
 ```
 
 ```{r time-adjusting-normalise}
@@ -544,7 +549,7 @@ zmr_czso_normd <- zmr %>%
   filter(vek_txt != "celkem") %>% 
   select(hodnota, rok, tyden, roktyden, vek_txt,
          idhod, stapro_kod, casref_do) %>% 
-  left_join(vek_do2020) %>% 
+  left_join(vek_do2021) %>% 
   mutate(per_100k = hodnota/pocet_obyv * 1e5) %>% 
   left_join(vek_2019) %>% 
   mutate(normd = per_100k * obyv_2019 / 1e5)
@@ -582,54 +587,85 @@ zmr_czso_avg <- zmr_czso_compare %>%
 ```
 
 ```{r time-adjusting-ribbondata}
-zmr_ribbon_data <- zmr_czso_normd_with_sum %>% 
-  mutate(iscovid = rok %in% 2020:2021, 
-         rok_dummy = if_else(iscovid, rok, 9999)) %>% 
-  mutate(day_sameyear_floored = floor_date(day_sameyear, "weeks", week_start = 1)) %>% 
-  group_by(iscovid, rok_dummy, vek_txt, tyden) %>% 
+zmr_ribbon_data_2020 <- zmr_czso_normd_with_sum %>% 
+  filter(rok <= 2019) %>% 
+  group_by(tyden, vek_txt) %>% 
   summarise(min = min(normd, na.rm = T), 
             max = max(normd, na.rm = T), .groups = "drop") %>% 
   mutate(vek_txt = fct_relevel(vek_txt, "celkem"),
-         weekstart_2020 = as.Date(paste(2020, tyden, 1, sep="-"), "%Y-%U-%u") - days(6))
+         tyden_padded = str_pad(tyden, width = 2, pad = "0"),
+         isoweekstart = paste0(2020, "-W", tyden_padded, "-", 1),
+         weekstart_covidyears = ISOweek2date(isoweekstart))
+
+zmr_ribbon_data_2021 <- zmr_czso_normd_with_sum %>% 
+  filter(rok <= 2019) %>% 
+  group_by(tyden, vek_txt) %>% 
+  summarise(min = min(normd, na.rm = T), 
+            max = max(normd, na.rm = T), .groups = "drop") %>% 
+  mutate(vek_txt = fct_relevel(vek_txt, "celkem"),
+         tyden_padded = str_pad(tyden, width = 2, pad = "0"),
+         isoweekstart = paste0(2021, "-W", tyden_padded, "-", 1),
+         weekstart_covidyears = ISOweek2date(isoweekstart)) %>% 
+  filter(weekstart_covidyears < max(zmr$casref_do, na.rm = T))
+
+wk_52_53 <- zmr_czso_normd_with_sum %>% 
+  filter(rok <= 2019, tyden >= 52) %>% 
+  group_by(vek_txt) %>% 
+  summarise(min = min(normd, na.rm = T), 
+            max = max(normd, na.rm = T), .groups = "drop") %>% 
+  mutate(tyden = 53)
+
+zmr_ribbon_data <- bind_rows(zmr_ribbon_data_2020 %>% 
+                               rows_update(wk_52_53, by = c("vek_txt", "tyden")),
+                             zmr_ribbon_data_2021) %>% 
+  mutate(vek_txt = fct_relevel(vek_txt, "celkem"))
+
+zmr_line_data <- zmr_czso_normd_with_sum %>% 
+  filter(rok > 2019) %>% 
+  mutate(tyden_padded = str_pad(tyden, width = 2, pad = "0"),
+         isoweekstart = paste0(rok, "-W", tyden_padded, "-", 1),
+         weekstart_covidyears = ISOweek2date(isoweekstart)) %>% 
+  mutate(vek_txt = fct_relevel(vek_txt, "celkem"))
 ```
 
 ### Standardised
 
 ```{r annotations}
-lbls_grey <- tribble(~vek_txt, ~weekstart_2020, ~min, ~txt,
+lbls_grey <- tribble(~vek_txt, ~weekstart_covidyears, ~min, ~txt,
                factor("celkem"), as.Date("2020-02-15"), 2600, "rozpětí\n2011-19",
                )
-lbls_blue <- tribble(~vek_txt, ~weekstart_2020, ~min, ~txt,
+lbls_blue <- tribble(~vek_txt, ~weekstart_covidyears, ~min, ~txt,
                factor("celkem"), as.Date("2020-04-25"), 1900, "2020"
                )
 ```
 
 ```{r age-adjusted-plot, fig.asp=0.6}
-ggplot(data = zmr_ribbon_data, mapping = aes(group = vek_txt, x = weekstart_2020)) +
-  geom_ribbon(data = zmr_ribbon_data %>% filter(!iscovid),
+ggplot() +
+  geom_ribbon(data = zmr_ribbon_data,
               alpha = 0.3,
-              aes(x = weekstart_2020, ymin = min, ymax = max)) +
-  geom_line(data = zmr_ribbon_data %>% filter(iscovid),
+              aes(ymin = min, ymax = max, x = weekstart_covidyears)) +
+  geom_line(data = zmr_line_data,
             colour = "darkblue",
             size = 1,
-            aes(y = min, group = rok_dummy)) +
-  geom_point(data = zmr_ribbon_data %>% filter(iscovid),
-            aes(y = min), 
+            aes(y = normd, x = weekstart_covidyears)) +
+  geom_point(data = zmr_line_data,
+            aes(y = normd, x = weekstart_covidyears), 
             size = .6, colour = "darkblue", fill = "white", shape = 21) +
   facet_wrap(~vek_txt, scales = "free_y") +
-  scale_x_date(date_breaks = "3 months",
-               date_labels = "%b", breaks = c(1,3,6, 9, 12)) +
+  scale_x_date(breaks = "2 months", labels = scales::label_date_short()) +
   theme_ptrr("y", multiplot = T) +
   labs(x = "Týden v roce",
        title = "Zemřelí podle týdnů v roce, 2011-2020",
        subtitle = str_glue("Přepočteno na věkovou strukturu roku 2019
                            Údaje do {last_date_fmt}. Modrá = 2020, šedá = rozpětí let 2011-2019"),
        caption = str_glue("Výpočet dle dat ČSÚ, sada 130185 (úmrtí) a 130142 (věk) | @petrbouchal {today_fmt}")) +
-  geom_text(data = lbls_grey, aes(y = min, label = txt), 
+  geom_text(data = lbls_grey, 
+            aes(y = min, label = txt, x = weekstart_covidyears), 
             family = "IBM Plex Sans Condensed",
             fontface = "bold",
             colour = "#454545",size = 2) +
-  geom_text(data = lbls_blue, aes(y = min, label = txt), 
+  geom_text(data = lbls_blue, 
+            aes(y = min, label = txt, x = weekstart_covidyears), 
             family = "IBM Plex Sans Condensed",
             fontface = "bold",
             colour = "darkblue", size = 2)
@@ -639,10 +675,19 @@ ggplot(data = zmr_ribbon_data, mapping = aes(group = vek_txt, x = weekstart_2020
 ```
 
 ```{r mort-base}
-zemr_plot_base <- zmr %>% 
-  ggplot(aes(day_sameyear, hodnota,
+
+zmr_for_plot <- zmr %>% 
+  mutate(tyden_padded = str_pad(tyden, width = 2, pad = "0"),
+         isoweekstart = paste0(2020, "-W", tyden_padded, "-", 1),
+         weekstart_covidyears = ISOweek2date(isoweekstart))
+
+zemr_plot_base <- zmr_for_plot %>% 
+  ggplot(aes(weekstart_covidyears, hodnota,
              alpha = rok %in% 2020:2021, size = rok %in% 2020:2021)) +
   geom_line(aes(colour = as.factor(rok), group = rok)) +
+  geom_point(data = zmr_for_plot %>% filter(rok > 2019),
+             aes(colour = as.factor(rok)),
+             size = .6, fill = "white", shape = 21) +
   scale_alpha_manual(values = c(`TRUE` = 1, `FALSE` = .4), guide = "none") +
   scale_size_manual(values = c(`TRUE` = .7, `FALSE` = .4), guide = "none") +
   scale_colour_viridis_d(direction = -1, name = "rok") +
@@ -717,12 +762,12 @@ excess_data_long <- excess_data %>%
 
 ```{r index-7, eval = T}
 
-date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
+date_last_stats <- max(zmr$casref_do)
 
 ggplot(excess_data_long %>% 
-         mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
-                                                                     "-", 1)),
-                alpha = if_else(weekstart_covidyears >= (date_last_stats + days(2)), 
+         mutate(weekstart_covidyears = ISOweek2date(paste0(roktyden_iso, 
+                                                           "-", 1)),
+                alpha = if_else(weekstart_covidyears >= date_last_stats, 
                                 "nedostupná", "dostupná")) %>% 
          filter(name != "umrti_expected") %>% 
          group_by(weekstart_covidyears, name, alpha) %>% 
