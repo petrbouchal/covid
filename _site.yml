@@ -5,15 +5,17 @@ exclude: ["LICENSE.md", "*.csv", "*.rds", "renv", "renv.lock", "google"]
 navbar:
   title: "Covid-19 CZ overview"
   right:
-  - icon: fa-github fa-lg
+  - icon: fab fa-github fa-lg
     href: https://github.com/petrbouchal/covid19
-  - icon: fa-asterisk fa-lg
+  - icon: fas fa-asterisk fa-lg
     href: https://petrbouchal.xyz
 output:
   html_document:
     css: extra.css
     toc: false
     toc_float: false
+    dev: ragg_png
+    fig_retina: 3
     mathjax: null
     df_print: paged
     includes:

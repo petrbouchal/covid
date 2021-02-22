@@ -4,14 +4,7 @@ title: "Covid-19 CZ: selected data for the Czech Republic"
 
 ```{r setup, include=F}
 
-knitr::opts_chunk$set(fig.retina = 3, echo = F, eval = T,
-                      warning = F,
-                      out.width = "90%",
-                      dev = "ragg_png",
-                      fig.showtext = T,
-                      message = F)
-
-knitr::opts_knit$set()
+knitr::opts_chunk$set(echo = F, eval = T, warning = F, out.width = "90%", message = F)
 
 library(stringr)
 library(dplyr)
@@ -33,16 +26,14 @@ library(fabletools)
 library(feasts)
 library(ISOweek)
 
-
 Sys.setlocale("LC_TIME", "cs_CZ.UTF-8")
 
 ptrr::set_geom_defaults()
-update_geom_defaults("rect", list(fill = "blue"))
 ```
 
 ```{r fonts}
-sysfonts::font_add_google("IBM Plex Sans")
-sysfonts::font_add_google("IBM Plex Sans Condensed")
+ptrr::register_plexsans()
+ptrr::register_plexsans_condensed()
 ```
 
 ```{r metathis}
