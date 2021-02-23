@@ -72,5 +72,5 @@ umrti_base_dots %>%
                                                ),
                            unhighlighted_params = list(colour = "firebrick", size = .6, alpha = .3))
 
-ggsave("dots-twitter.png", device = ragg::agg_png, width = 6, height = 6*9/16, res = 300, scale = 2)
+ggsave("dots-twitter.png", device = ragg::agg_png(width = 1500, height = 1500*9/16, res = 200, scaling = .6))
        
