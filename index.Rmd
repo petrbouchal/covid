@@ -801,7 +801,7 @@ excess_data_long2 <- excess_data %>%
          value = if_else(is.na(value), umrti_expected, value)) %>% 
   group_by(roktyden_iso, name)
 
-date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
+date_last_stats <- max(zmr$casref_do)
 
 ggplot(excess_data_long2 %>% 
          mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
@@ -834,7 +834,7 @@ ggplot(excess_data_long2 %>%
 
 ```{r index-6, eval = T}
 
-date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
+date_last_stats <- max(zmr$casref_do)
 
 ggplot(excess_data_long %>% 
          mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
