@@ -8,7 +8,7 @@ name: Render and Deploy RMarkdown Website
 jobs:
   build:
     env:
-        RENV_PATHS_ROOT: ~/Library/Application Support/renv
+      RENV_PATHS_ROOT: ~/Library/Application Support/renv
     runs-on: macos-latest
     steps:
       - name: Checkout repo
@@ -20,14 +20,6 @@ jobs:
       # - name: Install locale
       #   run: locale-gen cs_CZ.UTF-8
       
-      - name: Install XQuartz on MacOS
-        if: runner.os == 'macOS'
-        run: brew install --cask xquartz
-      
-      - name: Install cairo
-        if: runner.os == 'macOS'
-        run: brew install cairo
-
       - name: Install pandoc
         uses: r-lib/actions/setup-pandoc@v1
         with:
