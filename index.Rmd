@@ -768,11 +768,11 @@ ggplot(excess_data_long %>%
   guides(fill = guide_legend(reverse = T, order = 1),
          alpha = guide_legend(override.aes = list(fill = "darkblue"))) +
   scale_fill_manual(values = c(umrti_excess = "grey",
-                               umrti_covid = "darkblue"),
+                               umrti_covid = "blue"),
                     labels = c("Ostatní",
-                               "Covid-19"), name = "Příčiny rozdílů oproti 2017-19") +
+                               "Covid-19"), name = "Příčiny rozdílů\noproti 2017-19") +
   scale_alpha_discrete(range = c(1, .7), guide = "legend",
-                       name = "Data o všech úmrtích za 2020/21") +
+                       name = "Data o všech úmrtích\nza 2020/21") +
   theme_ptrr("both",
              legend.box = "horizontal",
              legend.position = c(.35, .85), legend.key.size = unit(.5, "cm")) +
@@ -806,7 +806,7 @@ date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 ggplot(excess_data_long2 %>% 
          mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
                                                                      "-", 1)),
-                alpha = if_else(weekstart_covidyears > date_last_stats + 2, 
+                alpha = if_else(weekstart_covidyears > date_last_stats, 
                                 "nedostupná", "dostupná")), 
        aes(weekstart_covidyears)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
@@ -816,9 +816,9 @@ ggplot(excess_data_long2 %>%
   scale_fill_manual(values = c(umrti_abs_covidyears_noncovid = "grey",
                                umrti_covid = "blue"),
                     labels = c("Covid-19", "Ostatní"), 
-                    name = "Příčiny rozdílu oproti 2017-19") +
+                    name = "Příčiny rozdílu\noproti 2017-19") +
   scale_alpha_discrete(range = c(1, .7), guide = "legend",
-                       name = "Data o všech úmrtích za 2020") +
+                       name = "Data o všech úmrtích\nza 2020") +
   guides(fill = guide_legend(reverse = T, order = 1),
          alpha = guide_legend()) +
   theme_ptrr("both") +
@@ -839,17 +839,17 @@ date_last_stats <- max(zmr$day_sameyear[zmr$rok >= 2020])
 ggplot(excess_data_long %>% 
          mutate(weekstart_covidyears = ISOweek::ISOweek2date(paste0(roktyden_iso, 
                                                                      "-", 1)),
-                alpha = if_else(weekstart_covidyears > (date_last_stats + 2), "nedostupná", "dostupná")),
+                alpha = if_else(weekstart_covidyears > date_last_stats, "nedostupná", "dostupná")),
        aes(weekstart_covidyears)) +
   geom_col(aes(y = value, fill = name, alpha = alpha)) +
   # geom_line(aes(y = umrti_mean_lastyrs)) +
   scale_fill_manual(values = c(umrti_excess = "darkred",
-                               umrti_covid = "darkblue",
+                               umrti_covid = "blue",
                                umrti_expected = "grey"),
                     labels = c("Ostatní",
                                "Covid-19",
-                               "Úroveň let 2015-19"), name = "Příčiny rozdílu proti 2017-19") +
-  scale_alpha_discrete(range = c(1, .7), guide = "legend", name = "Data o všech úmrtích za 2020/21") +
+                               "Úroveň let 2015-19"), name = "Příčiny rozdílu\nproti 2017-19") +
+  scale_alpha_discrete(range = c(1, .7), guide = "legend", name = "Data o všech úmrtích\nza 2020/21") +
   guides(fill = guide_legend(reverse = T, order = 1),
          alpha = guide_legend()) +
   theme_ptrr("both") +
