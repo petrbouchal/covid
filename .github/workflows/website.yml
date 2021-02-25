@@ -25,6 +25,11 @@ jobs:
         with:
           pandoc-version: '2.7.3' # The pandoc version to download (if necessary) and use.
 
+      - name: install fonts and font system deps
+        run: |
+          brew install pkg-config
+          brew install harfbuzz fribidi
+          
       - name: Cache packages
         uses: actions/cache@v2
         with:
