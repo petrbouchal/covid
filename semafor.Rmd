@@ -19,7 +19,7 @@ library(ggiraph)
 
 
 ```{r}
-ck <- czso::czso_get_catalogue()
+# ck <- czso::czso_get_catalogue()
 
 # ck %>% 
 #   filter(str_detect(title, "okres")) %>% 
