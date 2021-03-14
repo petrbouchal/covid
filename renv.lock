@@ -32,9 +32,9 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "CzechData",
       "RemoteUsername": "JanCaha",
-      "RemoteRef": "master",
+      "RemoteRef": "HEAD",
       "RemoteSha": "a4b990e0f8f8b8d0a5febe0be1029f114a73415b",
-      "Hash": "8e788752f66334a56e68b53890f1e275"
+      "Hash": "2fe1c37b543b5d583f584664f02868f6"
     },
     "DBI": {
       "Package": "DBI",
@@ -241,10 +241,10 @@
     },
     "cli": {
       "Package": "cli",
-      "Version": "2.3.0",
+      "Version": "2.3.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "26fb4f0871c8e5b84d77f6dc22f2ee0a"
+      "Hash": "3e3f28efcadfda442cd18651fbcbbecf"
     },
     "clipr": {
       "Package": "clipr",
@@ -796,10 +796,10 @@
     },
     "lubridate": {
       "Package": "lubridate",
-      "Version": "1.7.9.2",
+      "Version": "1.7.10",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5b5b02f621d39a499def7923a5aee746"
+      "Hash": "1ebfdc8a3cfe8fe19184f5481972b092"
     },
     "magrittr": {
       "Package": "magrittr",
@@ -901,10 +901,10 @@
     },
     "pillar": {
       "Package": "pillar",
-      "Version": "1.4.7",
+      "Version": "1.5.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3b3dd89b2ee115a8b54e93a34cd546b4"
+      "Hash": "39a778e4e487ded8b1bf5bb617c567b3"
     },
     "pkgbuild": {
       "Package": "pkgbuild",
@@ -1011,8 +1011,8 @@
       "RemoteRepo": "ptrr",
       "RemoteUsername": "petrbouchal",
       "RemoteRef": "HEAD",
-      "RemoteSha": "5bb94c3aef057db2065c6b0e744189ae60640a83",
-      "Hash": "fab4964d11828d53f0e3a7eefff1f929"
+      "RemoteSha": "2951373dbeaa8b0767401c2fff53d581126234b2",
+      "Hash": "e79c99343afa0ef46bfb9049dcd4e788"
     },
     "purrr": {
       "Package": "purrr",
@@ -1023,10 +1023,10 @@
     },
     "ragg": {
       "Package": "ragg",
-      "Version": "0.3.1",
+      "Version": "1.1.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a39fa2ccf55e72d5984247ef891217c2"
+      "Hash": "01f1614915f8061b023305c315b28cca"
     },
     "rappdirs": {
       "Package": "rappdirs",
@@ -1280,12 +1280,19 @@
       "Repository": "CRAN",
       "Hash": "495e0434d9305716b6a87031570ce109"
     },
-    "tibble": {
-      "Package": "tibble",
-      "Version": "3.0.6",
+    "textshaping": {
+      "Package": "textshaping",
+      "Version": "0.3.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "9c6c10e594f32096ede0c7d373ccbddd"
+      "Hash": "08517f55a30f309465c722ebd83f7e10"
+    },
+    "tibble": {
+      "Package": "tibble",
+      "Version": "3.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4d894a114dbd4ecafeda5074e7c538e6"
     },
     "tidyr": {
       "Package": "tidyr",
@@ -1331,10 +1338,10 @@
     },
     "units": {
       "Package": "units",
-      "Version": "0.6-7",
+      "Version": "0.7-0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4a3df844d6d35ca2ba2b7ba95446b955"
+      "Hash": "57404a7676b139cdcc3e2530508c864e"
     },
     "urltools": {
       "Package": "urltools",
