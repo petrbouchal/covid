@@ -11,11 +11,20 @@ writeLines(
   ),
   "google/2020_CZ_Region_Mobility_Report.csv"
 )
+writeLines(
+  readLines(
+    unz(tf, filename = "2021_CZ_Region_Mobility_Report.csv")
+  ),
+  "google/2021_CZ_Region_Mobility_Report.csv"
+)
 
-googledata <- read_csv("google/2020_CZ_Region_Mobility_Report.csv")
+googledata <- bind_rows(
+  read_csv("google/2020_CZ_Region_Mobility_Report.csv"),
+  read_csv("google/2021_CZ_Region_Mobility_Report.csv")
+  )
 
-glimpse(googledata)
-skimr::skim(googledata)
+# glimpse(googledata)
+# skimr::skim(googledata)
 
 Sys.setlocale("LC_ALL", "cs_CZ.UTF-8")
 
