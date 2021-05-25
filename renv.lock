@@ -5,6 +5,14 @@
       {
         "Name": "CRAN",
         "URL": "https://cran.rstudio.com"
+      },
+      {
+        "Name": "petrbouchal",
+        "URL": "https://petrbouchal.github.io/drat"
+      },
+      {
+        "Name": "scholaempirica",
+        "URL": "https://scholaempirica.github.io/drat"
       }
     ]
   },
@@ -310,10 +318,10 @@
     },
     "czso": {
       "Package": "czso",
-      "Version": "0.2.3.9000",
+      "Version": "0.3.4",
       "Source": "Repository",
-      "Repository": null,
-      "Hash": "68b28cfd170e7b639e69831a7e2cc0c2"
+      "Repository": "CRAN",
+      "Hash": "53fbcbc0d12b46c7ba668a351510852c"
     },
     "dbplyr": {
       "Package": "dbplyr",
