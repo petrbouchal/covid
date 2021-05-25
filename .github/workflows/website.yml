@@ -11,10 +11,6 @@ jobs:
       RENV_PATHS_ROOT: ~/Library/Application Support/renv
     runs-on: macos-latest
     steps:
-      - name: Install system libraries
-        run: |
-          brew install pkg-config
-          brew install libgit2
     
       - name: Checkout repo
         uses: actions/checkout@v2
