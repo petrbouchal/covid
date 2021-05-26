@@ -1114,10 +1114,10 @@
     },
     "rgeos": {
       "Package": "rgeos",
-      "Version": "0.5-3",
+      "Version": "0.5-5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4b63e0cfe930613d0b28bb0761e84aad"
+      "Hash": "94a44c3f0d49ceb80c385610696873ca"
     },
     "rhub": {
       "Package": "rhub",
