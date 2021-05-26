@@ -122,10 +122,10 @@
     },
     "V8": {
       "Package": "V8",
-      "Version": "3.2.0",
+      "Version": "3.4.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3c172c3eba3972c896b73361bfa323d0"
+      "Hash": "b181d4eb2904da0897a742a559964173"
     },
     "abind": {
       "Package": "abind",
