@@ -221,10 +221,9 @@ girafe(code = print(okresy_percap_plot / okresy_abs_plot),
 nhs_narust %>% 
   filter(max(pocet, na.rm = T) > 0) %>%
   ggplot(aes(datum, narust)) +
-  geom_line(colour = "darkblue", size = 1) +
-  geom_point(colour = "darkblue", size = 1.5) +
+  geom_col(fill = "darkblue", size = 1) +
   facet_wrap(facets = vars(okres), scales = "free_y") +
-  scale_y_continuous(expand = expansion(add = c(60, 60))) +
+  scale_y_continuous(expand = expansion(add = c(0, 20)), limits = c(0, NA)) +
   scale_x_date(labels = label_date_short(format = c(NA, "%b", "%d", "%h")), 
                breaks = breaks_width("2 days")) +
   ptrr::theme_ptrr("y", multiplot = T) +
@@ -336,7 +335,7 @@ heatmap_basedt_cr <- heatmap_basedt %>%
 
 ```{r weekdays-prep}
 ggpd <- nhs_bd %>% 
-  filter(datum > "2020-09-01") %>%
+  filter(datum > "2021-05-01") %>%
   mutate(tyden_zacinajici = floor_date(datum, "week"),
          denvtydnu = wday(datum, label = T, week_start = 1)) %>% 
   count(datum, denvtydnu, tyden_zacinajici, name = "pocet")
@@ -353,7 +352,7 @@ ggpd %>%
         group = denvtydnu, x = tyden_zacinajici)) +
   facet_wrap(denvtydnu~., nrow = 1) +
   scale_y_number_cz(expand = expansion(0,0))+
-  scale_x_date(date_breaks = "months", date_labels = "%b") +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b\n%Y") +
   theme_ptrr("both", multiplot = T) +
   labs(title = "Potvrzené případy koronaviru podle dní",
        caption = "@petrbouchal z dat MZd")
@@ -392,6 +391,7 @@ make_plot_base(heatmap_basedt_cr) +
                        n.breaks = 6,
                        name = "Průměrný denní počet nových případů") + 
   geom_tile(aes(datum, vek_range, fill = pocet)) +
+  scale_x_date(date_breaks = "4 weeks", labels = scales::label_date_short()) +
   labs(title = "Nové případy podle věku, po týdnech", x = "Týden začínající...",
        subtitle = "Průměrný denní počet nových případů v daném týdnu")
 ```
@@ -403,6 +403,7 @@ make_plot_base(heatmap_basedt_cr) +
   scale_fill_viridis_c(option = "B", labels = label_percent_cz(1),
                        name = "Podíl věkové skupiny v daném týdnu") + 
   geom_tile(aes(datum, vek_range, fill = podil)) +
+  scale_x_date(date_breaks = "4 weeks", labels = scales::label_date_short()) +
   guides(fill = guide_colorbar(title.position = "left", barwidth = unit(5, "cm"), 
                                title.vjust = .75)) +
   labs(title = "Věkové složení nových případů po týdnech", subtitle = "",
@@ -418,6 +419,7 @@ make_plot_base(heatmap_basedt_kraje) +
                        name = "Denní počet nových případů") + 
   facet_wrap(~ kraj) +
   geom_tile(aes(datum, vek_range, fill = pocet)) +
+  scale_x_date(date_breaks = "8 weeks", labels = scales::label_date_short()) +
   guides(fill = guide_colorbar(title.position = "top", barwidth = unit(5, "cm"))) +
   theme(legend.position = c(.75, .02),
         axis.text = element_text(size = 8)) +
@@ -433,6 +435,7 @@ make_plot_base(heatmap_basedt_kraje) +
                        name = "Podíl věkové skupiny v daném týdnu") + 
   facet_wrap(~ kraj) +
   geom_tile(aes(datum, vek_range, fill = podil)) +
+  scale_x_date(date_breaks = "8 weeks", labels = scales::label_date_short()) +
   guides(fill = guide_colorbar(title.position = "top", barwidth = unit(5, "cm"))) +
   theme(legend.position = c(.75, .02), , 
         legend.margin = unit(c(0,0,0,0), "cm"),
@@ -958,11 +961,12 @@ source("google_load-transform.R")
 ```{r mob-venue, include=T}
 gd_dlouhe %>% 
   filter(kraj_nazev == "Celá ČR",
-         date > "2020-09-01") %>% 
+         date > "2020-01-01") %>% 
   ggplot(aes(date, zmena)) +
   geom_hline(yintercept = 0, colour = "black", linetype = "dotted") +
   geom_line(size = .5, colour = "grey") +
   geom_smooth(aes(colour = kategorie_cz), size = .5, show.legend = F) +
+  scale_x_date(labels = scales::label_date_short()) +
   facet_wrap(~ kategorie_cz) +
   theme_ptrr("both", multiplot = T) +
   labs(title = "Mobilita podle typu místa",
@@ -979,6 +983,7 @@ gd_dlouhe %>%
 vikend_obchody <- gd_dlouhe %>% 
   filter(kraj_nazev == "Celá ČR",
          date > "2020-10-15",
+         date < "2020-12-15",
          kategorie %in% c("retail_and_recreation", "grocery_and_pharmacy")) %>% 
   mutate(denvtydnu = wday(date, label = T, abbr = T, week_start = 1) %>% 
            fct_relevel("Mon", "po", after = Inf),
