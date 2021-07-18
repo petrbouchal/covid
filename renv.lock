@@ -1,18 +1,10 @@
 {
   "R": {
-    "Version": "4.0.4",
+    "Version": "4.1.0",
     "Repositories": [
       {
         "Name": "CRAN",
         "URL": "https://cran.rstudio.com"
-      },
-      {
-        "Name": "petrbouchal",
-        "URL": "https://petrbouchal.github.io/drat"
-      },
-      {
-        "Name": "scholaempirica",
-        "URL": "https://scholaempirica.github.io/drat"
       }
     ]
   },
@@ -108,10 +100,10 @@
     },
     "RcppArmadillo": {
       "Package": "RcppArmadillo",
-      "Version": "0.10.1.0.0",
+      "Version": "0.10.6.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "742b8fb360381a242b6512df1faa53fb"
+      "Hash": "d34bcef6e2df81ab2d44c7fbe8b4d3f0"
     },
     "Rttf2pt1": {
       "Package": "Rttf2pt1",
@@ -570,7 +562,6 @@
       "Package": "ggtext",
       "Version": "0.1.1",
       "Source": "GitHub",
-      "Repository": "CRAN",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "clauswilke",
@@ -1012,7 +1003,7 @@
       "RemoteRepo": "ptrr",
       "RemoteRef": "master",
       "RemoteSha": "92ea3ae13d81b16860713b83a1c2ffa0a9d48195",
-      "Hash": "0818f5362a049a9b1cd5af7536bb984b"
+      "Hash": "fcac9f3542c0089131f6da7a9efdfc31"
     },
     "purrr": {
       "Package": "purrr",
