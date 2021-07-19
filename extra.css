@@ -136,7 +136,10 @@ h1, h2, h3, h4, h5 {color: #0000ff;}
 .nav-tabs>li.active>a.hover {
   background-color: #00f; 
   color: #fff;
-  
+}
+
+.nav-pills>li>a:focus {
+  outline-style: none;
 }
 
 .nav-tabs>li>a {
