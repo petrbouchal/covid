@@ -231,6 +231,21 @@ nhs_narust %>%
   labs(title = "Nárůst za posledních 7 dní")
 ```
 
+```{r narust-plot-percap}
+nhs_narust %>% 
+  filter(max(pocet, na.rm = T) > 0) %>%
+  mutate(okres = fct_reorder(okres, narust_perk, max, na.rm = T, .desc = T)) %>% 
+  ggplot(aes(datum, narust_perk)) +
+  geom_col(fill = "darkblue", size = 1) +
+  facet_wrap(facets = vars(okres)) +
+  scale_y_continuous(expand = expansion(add = c(0, 20)), limits = c(0, NA)) +
+  scale_x_date(labels = label_date_short(format = c(NA, "%b", "%d", "%h")), 
+               breaks = breaks_width("2 days")) +
+  ptrr::theme_ptrr("y", multiplot = T) +
+  theme(axis.text.x = element_text(hjust = 0)) +
+  labs(title = "Nárůst per 100k za posledních 7 dní")
+```
+
 ```{r narust-tab, eval=F}
 nhs_bd %>% 
   filter(datum > "2020-07-13") %>%
