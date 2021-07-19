@@ -482,6 +482,7 @@ make_plot_base(umrti_heatmap_dt) +
   scale_fill_viridis_c(option = "B", labels = label_number_cz(1),
                        name = "Počet úmrtí v daném týdnu") + 
   geom_tile(aes(week_starting, vek_range, fill = pocet)) +
+  scale_x_date(date_breaks = "4 weeks", labels = scales::label_date_short()) +
   labs(title = "Úmrtí podle věku",
        subtitle = "Průměrný denní počet úmrtí v daném týdnu",
        x = "Týden začínající...")
