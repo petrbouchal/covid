@@ -67,7 +67,7 @@ cisokr <- czso_get_codelist(109) %>%
 ciskraj <- czso_get_codelist(108) %>% 
   select(kraj_nuts_kod = CHODNOTA, kraj = ZKRTEXT)
 
-nhs <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/nakaza.csv")
+nhs <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/nakazeni-vyleceni-umrti-testy.csv")
 
 nhs_bd <- read_csv("https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.csv") %>% 
   left_join(cisokr) %>% 
