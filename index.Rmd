@@ -190,7 +190,7 @@ okresy_percap_plot <- okresy_p %>%
 
 okresy_abs_plot <- okresy_p %>% 
   left_join(lastwk, by = c("lau1_kod" = "okres_lau_kod")) %>% 
-  drop_na(okres) %>%
+  # drop_na(okres) %>%
   mutate(tooltip = paste0(okres, "\n", label_number_cz(1)(pocet))) %>% 
   # replace_na(list(pocet = 0)) %>% 
   ggplot(aes(fill = pocet, data_id = lau1_kod, tooltip = tooltip)) +
