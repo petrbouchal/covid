@@ -460,6 +460,61 @@ make_plot_base(heatmap_basedt_kraje) +
        x = "Týden začínající...")
 ```
 
+
+## Vaccines {.tabset .tabset-pills}
+
+### Doses & age
+
+```{r ockod-data}
+url_ocko_demo <- "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/ockovani-demografie.csv"
+ocko_demo <- read_csv(url_ocko_demo)
+```
+
+
+```{r ocko-process}
+ocko_demo_e <- ocko_demo %>% 
+  mutate(vakcina_s = 
+           recode(vakcina, 
+                  VAXZEVRIA = "AZ",
+                  Spikevax = "Moderna",
+                  `COVID-19 Vaccine Janssen` = "J&J",
+                  Comirnaty = "Pfizer"),
+         poradi_status = 
+           case_when(vakcina_s == "J&J" & poradi_davky == 1 ~ "Dokončení",
+                     vakcina_s != "J&J" & poradi_davky == 2 ~ "Dokončení",
+                     poradi_davky == 1 ~ "Zahájení",
+                     TRUE ~ "Posilovací") %>% 
+           as_factor() %>% fct_relevel("Zahájení",
+                                       "Dokončení",
+                                       "Posilovací"),
+         vek_g = case_when(
+           str_detect(vekova_skupina, "^[1-2]") ~ "do 29",
+           str_detect(vekova_skupina, "^[3-5]") ~ "30-59",
+           TRUE ~ "60+"
+         ) %>% as_factor() %>% fct_relevel("do 29", "30-59"))
+```
+
+
+```{r ocko-plot, fig.asp=.6, out.width="100%"}
+ocko_demo_e %>% 
+  filter(datum > (today() - 30)) %>% 
+  count(datum, poradi_status, vek_g,
+        wt = pocet_davek) %>% 
+  ggplot(aes(datum, n, fill = vek_g)) +
+  facet_wrap(~poradi_status) +
+  geom_col(width = .8) +
+  scale_fill_viridis_d(direction = -1, end = .6, name = "věk") +
+  ptrr::scale_y_number_cz() +
+  ptrr::theme_ptrr(multiplot = TRUE,
+                   strip.text = element_text(face = "bold")) +
+  scale_x_date(date_breaks = "1 week", 
+               labels = scales::label_date_short()) +
+labs(title = "Vakcíny podle věku a pořadí dávky",
+     subtitle = "Posledních 30 dní",
+     caption = "@petrbouchal z dat MZd ČR")
+
+```
+
 ## Deaths {.tabset .tabset-pills}
 
 ### By age
