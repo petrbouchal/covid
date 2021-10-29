@@ -184,6 +184,7 @@ okresy_percap_plot <- okresy_p %>%
                            show.limits = T, ticks = F, even.steps = T, axis = T, reverse = F)) +
   theme_void() +
   theme(legend.position = "right", legend.justification = 0,
+        legend.key.size = unit(10, "pt"),
         text = element_text(family = "IBM Plex Sans")) +
   labs(title = "Počet nových případů za posledních 7 dní",
        subtitle = "Na 100 tisíc obyvatel")
@@ -205,6 +206,7 @@ okresy_abs_plot <- okresy_p %>%
                            show.limits = T, ticks = F, even.steps = T, axis = T, reverse = F)) +
   theme_void() +
   theme(legend.position = "right", legend.justification = 0,
+        legend.key.size = unit(10, "pt"),
         text = element_text(family = "IBM Plex Sans")) +
   labs(subtitle = "Absolutně")
 
@@ -275,7 +277,9 @@ lastpos_g <- ggplot(lastpos_ch, aes(fill = as.integer(days_since_last))) +
                                   title = NULL, direction = "horizontal",
                                   show.limits = T, ticks = F)) +
   theme_void() +
-  theme(legend.position = c(.8, .8))
+  theme(legend.position = c(.8, .8),
+        legend.key.width = unit(6, "pt"),
+        legend.key.height = unit(10, "pt"))
 
 girafe(ggobj = lastpos_g, fonts = list(sans = "IBM Plex Sans"), 
        options = list(opts_sizing(width = 1),
@@ -506,7 +510,9 @@ ocko_demo_e %>%
   scale_fill_viridis_d(direction = -1, end = .6, name = "věk") +
   ptrr::scale_y_number_cz() +
   ptrr::theme_ptrr(multiplot = TRUE,
-                   strip.text = element_text(face = "bold")) +
+                   strip.text = element_text(face = "bold"),
+                   legend.key.height = unit(10, "pt"),
+                   legend.key.width = unit(6, "pt")) +
   scale_x_date(date_breaks = "1 week", 
                labels = scales::label_date_short()) +
 labs(title = "Vakcíny podle věku a pořadí dávky",
@@ -849,7 +855,10 @@ ggplot(excess_data_long %>%
                        name = "Data o všech úmrtích\nza 2020/21") +
   theme_ptrr("both",
              legend.box = "horizontal",
-             legend.position = c(.35, .85), legend.key.size = unit(.5, "cm")) +
+             legend.position = c(.22, .85),
+             legend.key.width = unit(6, "pt"),
+             legend.key.height = unit(10, "pt")
+             ) +
   scale_x_date(breaks = "1 month", labels = scales::label_date_short()) +
   labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
        subtitle = str_glue("Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\n",
@@ -891,16 +900,18 @@ ggplot(excess_data_long2 %>%
                                umrti_covid = "blue"),
                     labels = c("Covid-19", "Ostatní"), 
                     name = "Příčiny rozdílu\noproti 2017-19") +
+  scale_x_date(breaks = "1 month", labels = scales::label_date_short()) +
   scale_alpha_discrete(range = c(1, .7), guide = "legend",
                        name = "Data o všech úmrtích\nza 2020") +
   guides(fill = guide_legend(reverse = T, order = 1),
          alpha = guide_legend()) +
   theme_ptrr("both") +
-  scale_x_date(date_breaks = "month", date_labels = "%d %b") +
   labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
        subtitle = "Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\nPočty úmrtí 2017-19 přepočteny na věkovou strukturu roku 2019.\nData o celkové úmrtnosti mají zpoždění; poslední týdny jsou dopočteny z předchozích let\na aktuálních dat o Covid-19.",
        caption = "@petrbouchal z dat ČSÚ (týdenní počty úmrtí) a MZd (úmrtí na Covid)") +
-  theme(legend.position = c(.33, .81), legend.key.size = unit(.5, "cm"),
+  theme(legend.position = c(.22, .81),
+        legend.key.width = unit(6,   "pt"),
+        legend.key.height = unit(10, "pt"),
         legend.box = "horizontal") +
   annotate("text", as.Date("2020-05-10"), 2300, label = "Průměr 2017-19", 
            family = "IBM Plex Sans Condensed", face = "bold")
@@ -924,14 +935,16 @@ ggplot(excess_data_long %>%
                                "Covid-19",
                                "Úroveň let 2015-19"), name = "Příčiny rozdílu\nproti 2017-19") +
   scale_alpha_discrete(range = c(1, .7), guide = "legend", name = "Data o všech úmrtích\nza 2020/21") +
+  scale_x_date(breaks = "1 month", labels = scales::label_date_short()) +
   guides(fill = guide_legend(reverse = T, order = 1),
          alpha = guide_legend()) +
   theme_ptrr("both") +
-  scale_x_date(date_breaks = "month", date_labels = "%d %b") +
   labs(title = "Úmrtí: Covid-19 a nárůst navíc (excess deaths)",
        subtitle = "Týdenní počty zemřelých: nárůst spojený s Covid-19 x jiné příčiny\nPočty úmrtí 2017-19 přepočteny na věkovou strukturu roku 2019. Data o celkové úmrtnosti mají zpoždění.",
        caption = "@petrbouchal z dat ČSÚ (týdenní počty úmrtí) a MZd (úmrtí na Covid)") +
-  theme(legend.position = c(.33, .79), legend.key.size = unit(.5, "cm"), 
+  theme(legend.position = c(.22, .79),
+        legend.key.width = unit(6,   "pt"), 
+        legend.key.height = unit(10, "pt"), 
         legend.box = "horizontal", legend.box.just = "top")
 ```
 
