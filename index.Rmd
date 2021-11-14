@@ -289,7 +289,7 @@ girafe(ggobj = lastpos_g, fonts = list(sans = "IBM Plex Sans"),
 
 ```{r age-grid}
 cases_base <- nhs_bd %>% 
-  filter(datum > "2020-08-01", vek < 130) %>% 
+  filter(datum > "2021-09-01", vek < 130) %>% 
   mutate(vek_range = cut_width(vek, width = 15, boundary = 0, ordered_result = T) %>% 
            fct_relabel(str_remove_all, "\\(|\\)|\\]|\\[") %>% 
            fct_relabel(str_replace, "\\,", " - "),
@@ -362,6 +362,7 @@ ggpd <- nhs_bd %>%
 
 ```{r weekdays, include = T}
 ggpd %>% 
+  filter(datum > "2021-09-01") %>% 
   ggplot() +
   geom_area(
     scale = 1,
@@ -371,7 +372,7 @@ ggpd %>%
         group = denvtydnu, x = tyden_zacinajici)) +
   facet_wrap(denvtydnu~., nrow = 1) +
   scale_y_number_cz(expand = expansion(0,0))+
-  scale_x_date(date_breaks = "3 months", date_labels = "%b\n%Y") +
+  scale_x_date(date_breaks = "3 weeks", date_labels = "%d\n%b") +
   theme_ptrr("both", multiplot = T) +
   labs(title = "Potvrzené případy koronaviru podle dní",
        caption = "@petrbouchal z dat MZd")
@@ -422,7 +423,7 @@ make_plot_base(heatmap_basedt_cr) +
   scale_fill_viridis_c(option = "B", labels = label_percent_cz(1),
                        name = "Podíl věkové skupiny v daném týdnu") + 
   geom_tile(aes(datum, vek_range, fill = podil)) +
-  scale_x_date(date_breaks = "4 weeks", labels = scales::label_date_short()) +
+  scale_x_date(date_breaks = "2 weeks", labels = scales::label_date_short()) +
   guides(fill = guide_colorbar(title.position = "left", barwidth = unit(5, "cm"), 
                                title.vjust = .75)) +
   labs(title = "Věkové složení nových případů po týdnech", subtitle = "",
@@ -438,7 +439,7 @@ make_plot_base(heatmap_basedt_kraje) +
                        name = "Denní počet nových případů") + 
   facet_wrap(~ kraj) +
   geom_tile(aes(datum, vek_range, fill = pocet)) +
-  scale_x_date(date_breaks = "8 weeks", labels = scales::label_date_short()) +
+  scale_x_date(date_breaks = "2 weeks", labels = scales::label_date_short()) +
   guides(fill = guide_colorbar(title.position = "top", barwidth = unit(5, "cm"))) +
   theme(legend.position = c(.75, .02),
         axis.text = element_text(size = 8)) +
@@ -454,7 +455,7 @@ make_plot_base(heatmap_basedt_kraje) +
                        name = "Podíl věkové skupiny v daném týdnu") + 
   facet_wrap(~ kraj) +
   geom_tile(aes(datum, vek_range, fill = podil)) +
-  scale_x_date(date_breaks = "8 weeks", labels = scales::label_date_short()) +
+  scale_x_date(date_breaks = "2 weeks", labels = scales::label_date_short()) +
   guides(fill = guide_colorbar(title.position = "top", barwidth = unit(5, "cm"))) +
   theme(legend.position = c(.75, .02), , 
         legend.margin = unit(c(0,0,0,0), "cm"),
