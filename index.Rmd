@@ -1046,7 +1046,7 @@ source("google_load-transform.R")
 ```{r mob-venue, include=T}
 gd_dlouhe %>% 
   filter(kraj_nazev == "Celá ČR",
-         date > "2020-01-01") %>% 
+         date > "2021-09-01", kategorie_cz != "Parky") %>% 
   ggplot(aes(date, zmena)) +
   geom_hline(yintercept = 0, colour = "black", linetype = "dotted") +
   geom_line(size = .5, colour = "grey") +
@@ -1054,6 +1054,7 @@ gd_dlouhe %>%
   scale_x_date(labels = scales::label_date_short()) +
   facet_wrap(~ kategorie_cz) +
   theme_ptrr("both", multiplot = T) +
+  scale_y_continuous(limits = c(-50, 50)) +
   labs(title = "Mobilita podle typu místa",
        subtitle = str_glue("100 = před-Covid průměr pro daný den v týdnu\n",
                            "šedá čára = data, barevná = Loess vyhlazení"),
