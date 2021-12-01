@@ -570,7 +570,7 @@ make_plot_base(umrti_heatmap_dt) +
 ```{r mort-data}
 zmr0 <- czso_get_table("130185", force_redownload = T)
 zmr <- zmr0 %>% 
-  mutate(tyden = as.numeric(tyden),
+  mutate(tyden = as.integer(tyden),
          casref_do = as.Date(casref_do),
          day_sameyear = make_date(2020, month = month(casref_do),
                                   day = day(casref_do))) %>% 
@@ -602,17 +602,14 @@ vek_slct <- vek %>%
   ungroup() %>% 
   select(-casref_do)
 
-vek_2019 <- vek_slct %>% 
-  filter(rok == 2019, !is.na(vek_txt)) %>% 
-  rename(obyv_2019 = pocet_obyv) %>% 
+vek_2020 <- vek_slct %>% 
+  filter(rok == 2020, !is.na(vek_txt)) %>% 
+  rename(obyv_2020 = pocet_obyv) %>% 
   select(-rok)
 
 vek_do2021 <- vek_slct %>% 
   bind_rows(vek_slct %>% 
-              filter(rok == 2019) %>% 
-              mutate(rok = 2020)) %>% 
-  bind_rows(vek_slct %>% 
-              filter(rok == 2019) %>% 
+              filter(rok == 2020) %>% 
               mutate(rok = 2021))
 ```
 
@@ -623,8 +620,8 @@ zmr_czso_normd <- zmr %>%
          idhod, stapro_kod, casref_do) %>% 
   left_join(vek_do2021) %>% 
   mutate(per_100k = hodnota/pocet_obyv * 1e5) %>% 
-  left_join(vek_2019) %>% 
-  mutate(normd = per_100k * obyv_2019 / 1e5)
+  left_join(vek_2020) %>% 
+  mutate(normd = per_100k * obyv_2020 / 1e5)
 
 zmr_czso_normd_with_sum <- zmr_czso_normd %>% 
   bind_rows(zmr_czso_normd %>% 
