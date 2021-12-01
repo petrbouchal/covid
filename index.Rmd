@@ -626,7 +626,7 @@ zmr_czso_normd <- zmr %>%
 zmr_czso_normd_with_sum <- zmr_czso_normd %>% 
   bind_rows(zmr_czso_normd %>% 
               group_by(rok, tyden, roktyden, casref_do) %>% 
-              summarise(across(c(hodnota, obyv_2019, pocet_obyv, normd), sum)) %>% 
+              summarise(across(c(hodnota, obyv_2020, pocet_obyv, normd), sum)) %>% 
               mutate(per_100k = hodnota/pocet_obyv * 1e5,
                      vek_txt = "celkem")) %>% 
   mutate(day_sameyear = make_date(2020, month(casref_do), day(casref_do)))
