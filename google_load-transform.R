@@ -17,10 +17,17 @@ writeLines(
   ),
   "google/2021_CZ_Region_Mobility_Report.csv"
 )
+writeLines(
+  readLines(
+    unz(tf, filename = "2022_CZ_Region_Mobility_Report.csv")
+  ),
+  "google/2022_CZ_Region_Mobility_Report.csv"
+)
 
 googledata <- bind_rows(
   read_csv("google/2020_CZ_Region_Mobility_Report.csv"),
-  read_csv("google/2021_CZ_Region_Mobility_Report.csv")
+  read_csv("google/2021_CZ_Region_Mobility_Report.csv"),
+  read_csv("google/2022_CZ_Region_Mobility_Report.csv")
   )
 
 # glimpse(googledata)
