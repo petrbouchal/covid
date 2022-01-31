@@ -1133,10 +1133,15 @@
     },
     "rmarkdown": {
       "Package": "rmarkdown",
-      "Version": "2.7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "edbf4cb1aefae783fd8d3a008ae51943"
+      "Version": "2.9.7",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "rmarkdown",
+      "RemoteUsername": "rstudio",
+      "RemoteRef": "main",
+      "RemoteSha": "99df4e7db5ba0108c51557639e661df05554bf1b",
+      "Hash": "98b5b0f4290510aaedf2cdf46c60860e"
     },
     "rnaturalearth": {
       "Package": "rnaturalearth",
@@ -1308,10 +1313,10 @@
     },
     "tinytex": {
       "Package": "tinytex",
-      "Version": "0.29",
+      "Version": "0.35",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f0b0ba735febac9a8344253ae6fa93f5"
+      "Hash": "1d7220fe46159fb9f5c99a44354a2bff"
     },
     "triebeard": {
       "Package": "triebeard",
@@ -1413,10 +1418,10 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.21",
+      "Version": "0.28",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f3ddcca198959a42e8cb6b06c30d4f1e"
+      "Hash": "f7f3a61ab62cd046d307577a8ae12999"
     },
     "xml2": {
       "Package": "xml2",

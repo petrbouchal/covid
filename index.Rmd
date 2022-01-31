@@ -354,7 +354,7 @@ heatmap_basedt_cr <- heatmap_basedt %>%
 
 ```{r weekdays-prep}
 ggpd <- nhs_bd %>% 
-  filter(datum > "2021-05-01") %>%
+  filter(datum > "2021-10-01") %>%
   mutate(tyden_zacinajici = floor_date(datum, "week"),
          denvtydnu = wday(datum, label = T, week_start = 1)) %>% 
   count(datum, denvtydnu, tyden_zacinajici, name = "pocet")
@@ -384,7 +384,8 @@ ggpd %>%
 STL dekompozice - trend, 7-denní cyklická složka
 
 ```{r, include=TRUE}
-nhsts <- tsibble(nhs, index = datum)
+nhsts <- tsibble(nhs |> filter(datum > "2020-03-01"), 
+                 index = datum)
 
 nhsts_seasoned <- nhsts %>% 
   model(STL(prirustkovy_pocet_nakazenych ~ season(window = 7))) %>%  
