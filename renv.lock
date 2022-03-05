@@ -93,10 +93,8 @@
     },
     "Rcpp": {
       "Package": "Rcpp",
-      "Version": "1.0.6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "dbb5e436998a7eba5a9d682060533338"
+      "Version": "1.0.8",
+      "Source": "Repository"
     },
     "RcppArmadillo": {
       "Package": "RcppArmadillo",
@@ -724,10 +722,8 @@
     },
     "jqr": {
       "Package": "jqr",
-      "Version": "1.1.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "02960033a2cf34d7d9300971012cbe4b"
+      "Version": "1.2.2",
+      "Source": "Repository"
     },
     "jsonlite": {
       "Package": "jsonlite",
