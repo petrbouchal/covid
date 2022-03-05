@@ -384,7 +384,7 @@ ggpd %>%
 STL dekompozice - trend, 7-denní cyklická složka
 
 ```{r, include=TRUE}
-nhsts <- tsibble(nhs |> filter(datum > "2020-03-01"), 
+nhsts <- tsibble(nhs |> filter(datum > "2020-03-15"), 
                  index = datum)
 
 nhsts_seasoned <- nhsts %>% 
