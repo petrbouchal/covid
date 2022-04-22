@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Typologie okresů podle struktury nových případů</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="site_libs/d3-5.7.0/d3.min.js"></script>
+<script src="site_libs/d3-lasso-0.0.5/d3-lasso.min.js"></script>
+<link href="site_libs/ggiraphjs-0.3.0/ggiraphjs.min.css" rel="stylesheet" />
+<script src="site_libs/ggiraphjs-0.3.0/ggiraphjs.min.js"></script>
+<script src="site_libs/girafe-binding-0.7.8/girafe.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+
+<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//byrokrates.cz/matomo/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '6']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="extra.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Covid-19 CZ overview</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/petrbouchal/covid19">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://petrbouchal.xyz">
+    <span class="fas fa-asterisk fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Typologie okresů podle struktury nových případů</h1>
+
+</div>
+
+
+<div id="htmlwidget-e97cc0176c05d0b2193f" style="width:90%;height:480px;" class="girafe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e97cc0176c05d0b2193f">{"x":{"html":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5' viewBox='0 0 432.00 360.00'>\n  <g>\n    <defs>\n      <clipPath id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_1'>\n        <rect x='0.00' y='0.00' width='432.00' height='360.00'/>\n      <\/clipPath>\n    <\/defs>\n    <rect x='0.00' y='0.00' width='432.00' height='360.00' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_1' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_1)' fill='#FFFFFF' fill-opacity='1' stroke='#FFFFFF' stroke-opacity='1' stroke-width='0.75' stroke-linejoin='round' stroke-linecap='round'/>\n    <defs>\n      <clipPath id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_2'>\n        <rect x='0.00' y='0.00' width='432.00' height='360.00'/>\n      <\/clipPath>\n    <\/defs>\n    <defs>\n      <clipPath id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3'>\n        <rect x='47.15' y='25.45' width='267.85' height='302.88'/>\n      <\/clipPath>\n    <\/defs>\n    <rect x='47.15' y='25.45' width='267.85' height='302.88' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_2' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFFF' fill-opacity='1' stroke='none'/>\n    <polyline points='47.15,325.36 314.99,325.36' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_3' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.64' stroke-linejoin='round' stroke-linecap='butt'/>\n    <polyline points='47.15,251.13 314.99,251.13' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_4' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.64' stroke-linejoin='round' stroke-linecap='butt'/>\n    <polyline points='47.15,176.89 314.99,176.89' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_5' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.64' stroke-linejoin='round' stroke-linecap='butt'/>\n    <polyline points='47.15,102.66 314.99,102.66' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_6' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.64' stroke-linejoin='round' stroke-linecap='butt'/>\n    <polyline points='47.15,28.42 314.99,28.42' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_7' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.64' stroke-linejoin='round' stroke-linecap='butt'/>\n    <polyline points='49.77,328.33 49.77,25.45' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_8' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.64' stroke-linejoin='round' stroke-linecap='butt'/>\n    <polyline points='136.43,328.33 136.43,25.45' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_9' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.64' stroke-linejoin='round' stroke-linecap='butt'/>\n    <polyline points='223.09,328.33 223.09,25.45' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_10' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.64' stroke-linejoin='round' stroke-linecap='butt'/>\n    <polyline points='309.74,328.33 309.74,25.45' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_11' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='none' stroke='#EBEBEB' stroke-opacity='1' stroke-width='0.64' stroke-linejoin='round' stroke-linecap='butt'/>\n    <circle cx='49.77' cy='258.61' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_12' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Benešov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  19 &amp;lt;br&amp;gt;počet případů/den:  18'/>\n    <circle cx='49.77' cy='263.64' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_13' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FC8D59' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Beroun &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  27 &amp;lt;br&amp;gt;počet případů/den:  25'/>\n    <circle cx='127.14' cy='260.41' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_14' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Kladno &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  19 &amp;lt;br&amp;gt;počet případů/den:  32'/>\n    <circle cx='49.77' cy='263.28' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_15' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Kolín &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  15 &amp;lt;br&amp;gt;počet případů/den:  16'/>\n    <circle cx='49.77' cy='255.81' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_16' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Kutná Hora &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  21 &amp;lt;br&amp;gt;počet případů/den:  16'/>\n    <circle cx='49.77' cy='257.31' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_17' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Mělník &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  19 &amp;lt;br&amp;gt;počet případů/den:  21'/>\n    <circle cx='49.77' cy='249.74' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_18' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Mladá Boleslav &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  18 &amp;lt;br&amp;gt;počet případů/den:  23'/>\n    <circle cx='49.77' cy='271.16' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_19' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Nymburk &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  18 &amp;lt;br&amp;gt;počet případů/den:  18'/>\n    <circle cx='49.77' cy='276.32' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_20' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FC8D59' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Praha-východ &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  26 &amp;lt;br&amp;gt;počet případů/den:  48'/>\n    <circle cx='49.77' cy='271.47' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_21' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FC8D59' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Praha-západ &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  27 &amp;lt;br&amp;gt;počet případů/den:  40'/>\n    <circle cx='49.77' cy='261.97' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_22' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Příbram &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  22 &amp;lt;br&amp;gt;počet případů/den:  25'/>\n    <circle cx='312.37' cy='244.38' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_23' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Rakovník &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  17 &amp;lt;br&amp;gt;počet případů/den:  9'/>\n    <circle cx='49.77' cy='257.64' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_24' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='České Budějovice &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  13 &amp;lt;br&amp;gt;počet případů/den:  24'/>\n    <circle cx='49.77' cy='236.80' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_25' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Český Krumlov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  13 &amp;lt;br&amp;gt;počet případů/den:  8'/>\n    <circle cx='49.77' cy='235.72' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_26' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Jindřichův Hradec &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  17 &amp;lt;br&amp;gt;počet případů/den:  15'/>\n    <circle cx='49.77' cy='211.16' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_27' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Písek &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  18 &amp;lt;br&amp;gt;počet případů/den:  13'/>\n    <circle cx='49.77' cy='246.76' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_28' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Prachatice &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  10 &amp;lt;br&amp;gt;počet případů/den:  5'/>\n    <circle cx='49.77' cy='281.91' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_29' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Strakonice &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  17 &amp;lt;br&amp;gt;počet případů/den:  12'/>\n    <circle cx='49.77' cy='241.38' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_30' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Tábor &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  14 &amp;lt;br&amp;gt;počet případů/den:  14'/>\n    <circle cx='49.77' cy='268.80' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_31' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Domažlice &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  10 &amp;lt;br&amp;gt;počet případů/den:  6'/>\n    <circle cx='49.77' cy='235.87' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_32' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Klatovy &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  12 &amp;lt;br&amp;gt;počet případů/den:  10'/>\n    <circle cx='130.01' cy='269.00' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_33' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Plzeň-město &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  16 &amp;lt;br&amp;gt;počet případů/den:  31'/>\n    <circle cx='49.77' cy='234.00' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_34' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Plzeň-jih &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  18 &amp;lt;br&amp;gt;počet případů/den:  11'/>\n    <circle cx='269.16' cy='220.12' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_35' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Plzeň-sever &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  14 &amp;lt;br&amp;gt;počet případů/den:  11'/>\n    <circle cx='49.77' cy='241.16' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_36' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Rokycany &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  19 &amp;lt;br&amp;gt;počet případů/den:  10'/>\n    <circle cx='49.77' cy='270.66' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_37' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Tachov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  10 &amp;lt;br&amp;gt;počet případů/den:  5'/>\n    <circle cx='49.77' cy='253.03' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_38' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Cheb &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  12 &amp;lt;br&amp;gt;počet případů/den:  11'/>\n    <circle cx='49.77' cy='214.69' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_39' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Karlovy Vary &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  14 &amp;lt;br&amp;gt;počet případů/den:  16'/>\n    <circle cx='49.77' cy='286.80' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_40' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Sokolov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  12 &amp;lt;br&amp;gt;počet případů/den:  11'/>\n    <circle cx='186.24' cy='245.87' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_41' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Děčín &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  14 &amp;lt;br&amp;gt;počet případů/den:  18'/>\n    <circle cx='49.77' cy='215.72' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_42' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Chomutov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  15 &amp;lt;br&amp;gt;počet případů/den:  19'/>\n    <circle cx='49.77' cy='271.37' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_43' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Litoměřice &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  20 &amp;lt;br&amp;gt;počet případů/den:  24'/>\n    <circle cx='49.77' cy='253.88' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_44' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Louny &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  9 &amp;lt;br&amp;gt;počet případů/den:  8'/>\n    <circle cx='49.77' cy='250.23' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_45' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Most &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  11 &amp;lt;br&amp;gt;počet případů/den:  12'/>\n    <circle cx='200.48' cy='245.32' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_46' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Teplice &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  13 &amp;lt;br&amp;gt;počet případů/den:  16'/>\n    <circle cx='49.77' cy='246.31' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_47' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Ústí nad Labem &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  18 &amp;lt;br&amp;gt;počet případů/den:  22'/>\n    <circle cx='49.77' cy='225.02' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_48' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Česká Lípa &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  20 &amp;lt;br&amp;gt;počet případů/den:  21'/>\n    <circle cx='49.77' cy='239.88' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_49' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Jablonec nad Nisou &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  10 &amp;lt;br&amp;gt;počet případů/den:  9'/>\n    <circle cx='185.17' cy='234.89' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_50' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Liberec &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  10 &amp;lt;br&amp;gt;počet případů/den:  18'/>\n    <circle cx='49.77' cy='275.18' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_51' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Semily &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  14 &amp;lt;br&amp;gt;počet případů/den:  10'/>\n    <circle cx='49.77' cy='237.30' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_52' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Hradec Králové &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  23 &amp;lt;br&amp;gt;počet případů/den:  38'/>\n    <circle cx='49.77' cy='252.04' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_53' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Jičín &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  14 &amp;lt;br&amp;gt;počet případů/den:  12'/>\n    <circle cx='49.77' cy='231.70' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_54' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Náchod &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  19 &amp;lt;br&amp;gt;počet případů/den:  21'/>\n    <circle cx='49.77' cy='253.38' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_55' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Rychnov nad Kněžnou &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  18 &amp;lt;br&amp;gt;počet případů/den:  14'/>\n    <circle cx='49.77' cy='241.27' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_56' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Trutnov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  14 &amp;lt;br&amp;gt;počet případů/den:  16'/>\n    <circle cx='49.77' cy='244.10' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_57' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Chrudim &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  13 &amp;lt;br&amp;gt;počet případů/den:  14'/>\n    <circle cx='49.77' cy='244.63' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_58' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Pardubice &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  18 &amp;lt;br&amp;gt;počet případů/den:  31'/>\n    <circle cx='49.77' cy='255.67' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_59' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Svitavy &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  13 &amp;lt;br&amp;gt;počet případů/den:  14'/>\n    <circle cx='49.77' cy='254.98' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_60' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Ústí nad Orlicí &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  14 &amp;lt;br&amp;gt;počet případů/den:  19'/>\n    <circle cx='200.48' cy='253.06' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_61' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Havlíčkův Brod &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  17 &amp;lt;br&amp;gt;počet případů/den:  16'/>\n    <circle cx='49.77' cy='247.59' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_62' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Jihlava &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  11 &amp;lt;br&amp;gt;počet případů/den:  12'/>\n    <circle cx='49.77' cy='246.76' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_63' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Pelhřimov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  20 &amp;lt;br&amp;gt;počet případů/den:  15'/>\n    <circle cx='271.97' cy='245.42' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_64' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Třebíč &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  10 &amp;lt;br&amp;gt;počet případů/den:  11'/>\n    <circle cx='49.77' cy='265.51' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_65' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Žďár nad Sázavou &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  16 &amp;lt;br&amp;gt;počet případů/den:  18'/>\n    <circle cx='49.77' cy='235.77' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_66' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Blansko &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  15 &amp;lt;br&amp;gt;počet případů/den:  17'/>\n    <circle cx='115.92' cy='263.03' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_67' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Brno-venkov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  17 &amp;lt;br&amp;gt;počet případů/den:  37'/>\n    <circle cx='49.77' cy='255.49' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_68' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Břeclav &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  17 &amp;lt;br&amp;gt;počet případů/den:  19'/>\n    <circle cx='49.77' cy='248.63' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_69' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Hodonín &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  17 &amp;lt;br&amp;gt;počet případů/den:  25'/>\n    <circle cx='49.77' cy='236.99' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_70' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Vyškov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  13 &amp;lt;br&amp;gt;počet případů/den:  12'/>\n    <circle cx='49.77' cy='271.98' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_71' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Znojmo &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  11 &amp;lt;br&amp;gt;počet případů/den:  13'/>\n    <circle cx='49.77' cy='281.70' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_72' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Jeseník &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  13 &amp;lt;br&amp;gt;počet případů/den:  5'/>\n    <circle cx='113.73' cy='258.52' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_73' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Olomouc &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  16 &amp;lt;br&amp;gt;počet případů/den:  39'/>\n    <circle cx='232.21' cy='253.47' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_74' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Prostějov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  13 &amp;lt;br&amp;gt;počet případů/den:  14'/>\n    <circle cx='49.77' cy='260.41' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_75' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Přerov &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  14 &amp;lt;br&amp;gt;počet případů/den:  18'/>\n    <circle cx='49.77' cy='272.78' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_76' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Šumperk &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  11 &amp;lt;br&amp;gt;počet případů/den:  14'/>\n    <circle cx='49.77' cy='252.04' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_77' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Kroměříž &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  11 &amp;lt;br&amp;gt;počet případů/den:  12'/>\n    <circle cx='49.77' cy='240.78' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_78' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Uherské Hradiště &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  17 &amp;lt;br&amp;gt;počet případů/den:  24'/>\n    <circle cx='49.77' cy='236.99' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_79' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Vsetín &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  8 &amp;lt;br&amp;gt;počet případů/den:  12'/>\n    <circle cx='49.77' cy='259.23' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_80' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#FFFFBF' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Zlín &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  17 &amp;lt;br&amp;gt;počet případů/den:  33'/>\n    <circle cx='49.77' cy='224.99' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_81' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Bruntál &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  11 &amp;lt;br&amp;gt;počet případů/den:  10'/>\n    <circle cx='133.10' cy='262.55' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_82' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Frýdek-Místek &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  14 &amp;lt;br&amp;gt;počet případů/den:  30'/>\n    <circle cx='49.77' cy='262.71' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_83' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Karviná &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  13 &amp;lt;br&amp;gt;počet případů/den:  31'/>\n    <circle cx='49.77' cy='233.58' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_84' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Nový Jičín &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  10 &amp;lt;br&amp;gt;počet případů/den:  16'/>\n    <circle cx='49.77' cy='257.44' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_85' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Opava &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  12 &amp;lt;br&amp;gt;počet případů/den:  22'/>\n    <circle cx='49.77' cy='235.94' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_86' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#91CF60' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='Ostrava-město &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  16 &amp;lt;br&amp;gt;počet případů/den:  50'/>\n    <circle cx='49.77' cy='28.42' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_87' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_3)' fill='#7F7F7F' fill-opacity='1' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round' title='NA &amp;lt;br&amp;gt; &amp;lt;br&amp;gt;příp./den na 100k:  NA &amp;lt;br&amp;gt;počet případů/den:  0'/>\n    <defs>\n      <clipPath id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4'>\n        <rect x='0.00' y='0.00' width='432.00' height='360.00'/>\n      <\/clipPath>\n    <\/defs>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='28.23' y='328.43' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_88' font-size='6.60pt' fill='#4D4D4D' fill-opacity='1' font-family='IBM Plex Sans Condensed'>0 %<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='23.48' y='254.20' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_89' font-size='6.60pt' fill='#4D4D4D' fill-opacity='1' font-family='IBM Plex Sans Condensed'>25 %<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='23.48' y='179.96' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_90' font-size='6.60pt' fill='#4D4D4D' fill-opacity='1' font-family='IBM Plex Sans Condensed'>50 %<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='23.48' y='105.73' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_91' font-size='6.60pt' fill='#4D4D4D' fill-opacity='1' font-family='IBM Plex Sans Condensed'>75 %<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='18.73' y='31.49' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_92' font-size='6.60pt' fill='#4D4D4D' fill-opacity='1' font-family='IBM Plex Sans Condensed'>100 %<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='42.78' y='339.41' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_93' font-size='6.60pt' fill='#4D4D4D' fill-opacity='1' font-family='IBM Plex Sans Condensed'>0 %<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='129.44' y='339.41' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_94' font-size='6.60pt' fill='#4D4D4D' fill-opacity='1' font-family='IBM Plex Sans Condensed'>0 %<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='216.09' y='339.41' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_95' font-size='6.60pt' fill='#4D4D4D' fill-opacity='1' font-family='IBM Plex Sans Condensed'>1 %<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='302.75' y='339.41' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_96' font-size='6.60pt' fill='#4D4D4D' fill-opacity='1' font-family='IBM Plex Sans Condensed'>2 %<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='108.35' y='351.69' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_97' font-size='8.25pt' font-family='IBM Plex Sans Condensed'>Podíl nákazy v zahraničí na celku<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text transform='translate(13.66,267.31) rotate(-90.00)' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_98' font-size='8.25pt' font-family='IBM Plex Sans Condensed'>Podíl osob starších 65 let na nakažených<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='331.43' y='55.07' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_99' font-size='8.25pt' font-family='IBM Plex Sans Condensed'>Počet<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='331.43' y='66.95' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_100' font-size='8.25pt' font-family='IBM Plex Sans Condensed'>nových případů/den<\/text>\n    <\/g>\n    <circle cx='340.07' cy='82.23' r='1.94pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_101' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' fill='none' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round'/>\n    <circle cx='340.07' cy='99.51' r='3.16pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_102' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' fill='none' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round'/>\n    <circle cx='340.07' cy='116.79' r='4.00pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_103' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' fill='none' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round'/>\n    <circle cx='340.07' cy='134.07' r='4.68pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_104' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' fill='none' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round'/>\n    <circle cx='340.07' cy='151.35' r='5.03pt' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_105' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' fill='none' stroke='#A9A9A9' stroke-opacity='1' stroke-width='0.71' stroke-linejoin='round' stroke-linecap='round'/>\n    <line x1='345.26' y1='73.59' x2='348.71' y2='73.59' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_106' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' stroke='#000000' stroke-opacity='1' stroke-width='0.38' stroke-linejoin='round' stroke-linecap='butt' fill='#FFFFFF' fill-opacity='1'/>\n    <line x1='345.26' y1='90.87' x2='348.71' y2='90.87' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_107' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' stroke='#000000' stroke-opacity='1' stroke-width='0.38' stroke-linejoin='round' stroke-linecap='butt' fill='#FFFFFF' fill-opacity='1'/>\n    <line x1='345.26' y1='108.15' x2='348.71' y2='108.15' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_108' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' stroke='#000000' stroke-opacity='1' stroke-width='0.38' stroke-linejoin='round' stroke-linecap='butt' fill='#FFFFFF' fill-opacity='1'/>\n    <line x1='345.26' y1='125.43' x2='348.71' y2='125.43' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_109' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' stroke='#000000' stroke-opacity='1' stroke-width='0.38' stroke-linejoin='round' stroke-linecap='butt' fill='#FFFFFF' fill-opacity='1'/>\n    <line x1='345.26' y1='142.71' x2='348.71' y2='142.71' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_110' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' stroke='#000000' stroke-opacity='1' stroke-width='0.38' stroke-linejoin='round' stroke-linecap='butt' fill='#FFFFFF' fill-opacity='1'/>\n    <line x1='345.26' y1='159.99' x2='348.71' y2='159.99' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_111' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' stroke='#000000' stroke-opacity='1' stroke-width='0.38' stroke-linejoin='round' stroke-linecap='butt' fill='#FFFFFF' fill-opacity='1'/>\n    <line x1='348.71' y1='159.99' x2='348.71' y2='73.59' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_112' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' stroke='#000000' stroke-opacity='1' stroke-width='0.38' stroke-linejoin='round' stroke-linecap='square' fill='#FFFFFF' fill-opacity='1'/>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='354.19' y='76.66' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_113' font-size='6.60pt' font-family='IBM Plex Sans Condensed'>0<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='354.19' y='93.94' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_114' font-size='6.60pt' font-family='IBM Plex Sans Condensed'>100<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='354.19' y='111.22' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_115' font-size='6.60pt' font-family='IBM Plex Sans Condensed'>200<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='354.19' y='128.50' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_116' font-size='6.60pt' font-family='IBM Plex Sans Condensed'>300<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='354.19' y='145.78' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_117' font-size='6.60pt' font-family='IBM Plex Sans Condensed'>400<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='354.19' y='163.06' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_118' font-size='6.60pt' font-family='IBM Plex Sans Condensed'>500<\/text>\n    <\/g>\n    <rect x='331.43' y='278.76' width='17.28' height='28.80' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_119' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' fill='#91CF60' fill-opacity='1' stroke='none' title='pocet_percap'/>\n    <rect x='331.43' y='249.96' width='17.28' height='28.80' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_120' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' fill='#FFFFBF' fill-opacity='1' stroke='none' title='pocet_percap'/>\n    <rect x='331.43' y='221.16' width='17.28' height='28.80' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_121' clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)' fill='#FC8D59' fill-opacity='1' stroke='none' title='pocet_percap'/>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='358.94' y='310.63' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_122' font-size='6.60pt' font-family='IBM Plex Sans Condensed'>8,4<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='354.19' y='281.83' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_123' font-size='6.60pt' font-family='IBM Plex Sans Condensed'>16,1<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='354.19' y='253.03' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_124' font-size='6.60pt' font-family='IBM Plex Sans Condensed'>23,7<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='354.19' y='224.23' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_125' font-size='6.60pt' font-family='IBM Plex Sans Condensed'>31,4<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='331.43' y='190.76' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_126' font-size='8.25pt' font-family='IBM Plex Sans Condensed'>Počet<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='331.43' y='202.64' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_127' font-size='8.25pt' font-family='IBM Plex Sans Condensed'>nových případů/den<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='331.43' y='214.52' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_128' font-size='8.25pt' font-family='IBM Plex Sans Condensed'>na 100 tis. obyvatel<\/text>\n    <\/g>\n    <g clip-path='url(#svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_cl_4)'>\n      <text x='5.98' y='17.64' id='svg_34a6051a-71d7-4d04-b20e-54db7f3961e5_el_129' font-size='8.25pt' font-family='IBM Plex Sans Condensed'>Denní průměry za posledních 7 dní<\/text>\n    <\/g>\n  <\/g>\n<\/svg>","js":null,"uid":"svg_34a6051a-71d7-4d04-b20e-54db7f3961e5","ratio":1.2,"settings":{"tooltip":{"css":".tooltip_SVGID_ { font-family: IBM Plex Sans; color:white; background-color: black; padding:6px;border-radius:5px; ; position:absolute;pointer-events:none;z-index:999;}\n","offx":10,"offy":0,"use_cursor_pos":true,"opacity":0.9,"usefill":false,"usestroke":false,"delay":{"over":200,"out":500}},"hover":{"css":".hover_SVGID_ { stroke: white }\n","reactive":false},"hoverkey":{"css":".hover_key_SVGID_ { stroke:red; }\n","reactive":false},"hovertheme":{"css":".hover_theme_SVGID_ { fill:green; }\n","reactive":false},"hoverinv":{"css":""},"zoom":{"min":1,"max":1},"capture":{"css":".selected_SVGID_ { fill:red;stroke:gray; }\n","type":"multiple","only_shiny":true,"selected":[]},"capturekey":{"css":".selected_key_SVGID_ { stroke:gray; }\n","type":"single","only_shiny":true,"selected":[]},"capturetheme":{"css":".selected_theme_SVGID_ { stroke:gray; }\n","type":"single","only_shiny":true,"selected":[]},"toolbar":{"position":"topright","saveaspng":true,"pngname":"diagram"},"sizing":{"rescale":true,"width":1}}},"evals":[],"jsHooks":[]}</script>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+</body>
+</html>
